@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "declaration": true,
+    "declarationDir": "./types",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "target": "ES2019",
+    "sourceMap": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "outDir": "./build",
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "lib": ["es5", "es6"]
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules"]
+}
