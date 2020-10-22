@@ -1,27 +1,14 @@
 version: 2.1
 orbs:
   node: circleci/node@4.1.0
-
-jobs:
-  test:
-    docker:
-      - image: 'cimg/base:stable'
-    steps:
-      - checkout
-      - node/install:
-          install-yarn: true
-      - run: node --version
-      - node/install-packages:
-          pkg-manager: yarn
-      - node/test
 workflows:
-  node-tests:
+  tests:
     jobs:
-      - test:
+      - node/test:
+          pkg-manager: yarn
           matrix:
             parameters:
               version:
-                - 10
-                - 11
-                - 12
-                - 14
+                - 13.11.0
+                - 12.16.0
+                - 10.19.0
