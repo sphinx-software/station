@@ -36,6 +36,11 @@ For client-side implementation, please check `@sphinx-software/antenna`_
 - [Advance topics](#advance-topics)
   - [How it works](#how-it-works)
   - [Supported services](#supported-services)
+  - [Framework integration](#framework-integrations)
+    - [express](#express)
+    - [Koa](#koa)
+    - [NestJS](#nestjs)
+    - [TypeORM](#typeorm)
   - [Extending messaging transporter](#extending-messaging-transporter)
   - [Extending notification pusher](#extending-notification-pusher)
 - [Best practices](#best-practices)
@@ -109,7 +114,7 @@ class AwesomeSubscriber implements Subscriber {
 ```
 
 Any class (or entity) can be a subscriber if they implement the `Subscriber` interface.
-`Broadcast` now can send messages to that subscriber through their channel.
+`Broadcast` now can send messages to that subscriber through its channel.
 
 ```ts
 // ... somewhere in your server-side code
@@ -133,6 +138,16 @@ await broadcast.send(greetingMessage, myAwesomeSubscriber)
 ## How it works
 
 ## Supported services
+
+## Framework integrations
+
+### express
+
+### Koa
+
+### NestJS
+
+### TypeORM
 
 ## Extending messaging transporter
 

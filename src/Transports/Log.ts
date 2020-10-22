@@ -1,5 +1,5 @@
 import { MessageShape, Transport } from '../BroadcastContracts'
-type Logger = {
+export type Logger = {
   log(data: any, context: string): void
 }
 export default class Log implements Transport {

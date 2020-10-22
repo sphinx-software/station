@@ -1,6 +1,7 @@
 import { Subscriber, MessageShape, Transport } from './BroadcastContracts'
 import Broadcast from './Broadcast'
 import * as nestjs from './nestjs'
+import * as transports from './Transports'
 
 export {
   // Broadcast related
@@ -10,6 +11,7 @@ export {
   Broadcast,
   // ... todo notification related
 
-  // NestJS supports
+  // Sub namespaces
   nestjs,
+  transports,
 }
