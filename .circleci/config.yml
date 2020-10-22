@@ -22,7 +22,7 @@ workflows:
       - test:
           matrix:
             parameters:
-              node-version:
+              version:
                 - 10
                 - 11
                 - 12
