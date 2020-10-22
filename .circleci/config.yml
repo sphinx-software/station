@@ -4,6 +4,8 @@ orbs:
 
 jobs:
   test:
+    docker:
+      - image: 'cimg/base:stable'
     executor:
       name: node/default
       tag: '13'
