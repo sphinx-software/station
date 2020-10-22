@@ -2,8 +2,8 @@ import { Transport, MessageShape, Subscriber } from './BroadcastContracts'
 
 export default class Broadcast {
   constructor(
-    protected readonly transport: Transport,
-    protected readonly publicChannels: string[],
+    private readonly transport: Transport,
+    private readonly publicChannels: string[],
   ) {}
 
   /**
@@ -20,6 +20,15 @@ export default class Broadcast {
    */
   public(message: MessageShape<unknown>) {
     return this.transport.send(message, this.publicChannels)
+  }
+
+  /**
+   * Get the transport
+   *
+   * @returns {Transport}
+   */
+  getTransport() {
+    return this.transport
   }
 
   /**
