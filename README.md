@@ -4,6 +4,14 @@
 
 Abstraction Layer for realtime messaging & push notification
 
+`yarn`
+
+    yarn add @sphinx-software/station
+
+`npm`
+
+    npm i -S @sphinx-software/station
+
 _This package is server implementation.
 For client-side implementation, please check `@sphinx-software/antenna`_
 
