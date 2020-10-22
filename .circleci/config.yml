@@ -6,11 +6,11 @@ jobs:
   test:
     docker:
       - image: 'cimg/base:stable'
-    executor:
-      name: node/default
-      tag: '13'
     steps:
       - checkout
+      - node/install:
+          install-yarn: true
+      - run: node --version
       - node/install-packages:
           pkg-manager: yarn
       - run:
