@@ -1,8 +1,10 @@
 import Broadcast from '../Broadcast'
 import { Transport } from '../BroadcastContracts'
-import Firestore from '../Transports/Firestore'
-import { Provider } from '@nestjs/common'
 import admin from 'firebase-admin'
+import { Provider } from '@nestjs/common'
+import FirestoreTransport from '../Transports/Firestore'
+import NullTransport from '../Transports/Null'
+import LogTransport from '../Transports/Log'
 
 type BroadcastConfig = {
   // The transport that will be used
@@ -78,7 +80,15 @@ export default class BroadcastModule {
     return {
       firestore: {
         factory: ({ firebase }: { firebase: admin.app.App }) => () =>
-          new Firestore(firebase.firestore(), firebase.auth()),
+          new FirestoreTransport(firebase.firestore(), firebase.auth()),
+        inject: [],
+      },
+      null: {
+        factory: () => () => new NullTransport(),
+        inject: [],
+      },
+      log: {
+        factory: ({ logger }) => () => new LogTransport(logger),
         inject: [],
       },
     }
