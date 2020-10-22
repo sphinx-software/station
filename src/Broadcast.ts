@@ -1,39 +1,36 @@
-import { Transport, MessageShape, Subscriber } from './contract'
+import { Transport, MessageShape, Subscriber } from './BroadcastContracts'
 
 export default class Broadcast {
   constructor(
     protected readonly broadcaster: Transport,
-    publicChannel: string,
+    protected readonly publicChannels: string[],
   ) {}
 
   /**
-   * Broadcast the message
+   * Broadcast the message to subscribers
    *
-   * @param message
-   * @param subscriber
    */
   send(message: MessageShape<unknown>, subscriber: Subscriber | Subscriber[]) {
-    return this.broadcaster.send(message, this.resolveChannels(subscriber))
+    return this.broadcaster.send(message, Broadcast.resolveChannels(subscriber))
   }
 
   /**
-   * Broadcast a bulk of messages
+   * Send a message to the public channels
    *
-   * @param message
-   * @param subscriber
-   * @param adapter
    */
-  bulk(
-    message: MessageShape<unknown>[],
-    subscriber: Subscriber | Subscriber[],
-    adapter?: string,
-  ) {
-    return this.broadcaster.bulk(message, this.resolveChannels(subscriber))
+  public(message: MessageShape<unknown>) {
+    return this.broadcaster.send(message, this.publicChannels)
   }
 
-  public(message: MessageShape<unknown>) {}
-
-  private resolveChannels(subscriber: Subscriber | Subscriber[]): string[] {
-    return []
+  /**
+   * Get the channels from subscribers
+   *
+   */
+  private static resolveChannels(
+    subscriber: Subscriber | Subscriber[],
+  ): string[] {
+    return subscriber instanceof Array
+      ? subscriber.map((sub: Subscriber) => sub.channel())
+      : [subscriber.channel()]
   }
 }

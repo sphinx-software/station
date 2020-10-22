@@ -15,14 +15,6 @@ export interface Transport {
    * @param channels
    */
   send(message: MessageShape<unknown>, channels: string[]): Promise<void>
-
-  /**
-   * Sends a bulk of messages to recipient(s)
-   *
-   * @param messages
-   * @param channels
-   */
-  bulk(messages: MessageShape<unknown>[], channels: string[]): Promise<void>
 }
 
 /**
@@ -31,9 +23,10 @@ export interface Transport {
  */
 export interface SupportPrivateChannels<Credential, GrantEntity> {
   /**
-   * Granting the permission for a credential
+   * Granting the permission to subscriber to listening on the private channels
    *
    * @param credential
+   * @param privateChannels
    */
-  grant(credential: Credential): Promise<GrantEntity>
+  grant(credential: Credential, privateChannels: string[]): Promise<GrantEntity>
 }
