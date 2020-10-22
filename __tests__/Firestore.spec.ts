@@ -1,5 +1,5 @@
 import * as admin from 'firebase-admin'
-import Firestore from '../../src/Transports/Firestore'
+import Firestore from '../src/Transports/Firestore'
 import * as jwt from 'jsonwebtoken'
 
 const app = admin.initializeApp({

@@ -1,10 +1,10 @@
-import Broadcast from '../Broadcast'
-import { Transport } from '../BroadcastContracts'
 import admin from 'firebase-admin'
-import { Provider } from '@nestjs/common'
+import Broadcast from '../Broadcast'
 import FirestoreTransport from '../Transports/Firestore'
 import NullTransport from '../Transports/Null'
 import LogTransport from '../Transports/Log'
+import { Provider } from '@nestjs/common'
+import { Transport } from '../BroadcastContracts'
 
 type BroadcastConfig = {
   // The transport that will be used
@@ -40,18 +40,9 @@ export default class BroadcastModule {
 
     return {
       module: BroadcastModule,
-      providers: [
-        provider,
-        {
-          provide: '@sphinx/station.Broadcast',
-          useExisting: Broadcast,
-        },
-        {
-          provide: 'Broadcast',
-          useExisting: Broadcast,
-        },
-      ],
-      exports: [Broadcast, '@sphinx/station.Broadcast', 'Broadcast'],
+      global: true,
+      providers: [provider],
+      exports: [Broadcast],
     }
   }
 
@@ -74,6 +65,7 @@ export default class BroadcastModule {
           config.publicChannels,
         )
       },
+      inject: transportFactory.inject,
     }
   }
 

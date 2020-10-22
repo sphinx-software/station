@@ -2,7 +2,7 @@ import { Transport, MessageShape, Subscriber } from './BroadcastContracts'
 
 export default class Broadcast {
   constructor(
-    protected readonly broadcaster: Transport,
+    protected readonly transport: Transport,
     protected readonly publicChannels: string[],
   ) {}
 
@@ -11,7 +11,7 @@ export default class Broadcast {
    *
    */
   send(message: MessageShape<unknown>, subscriber: Subscriber | Subscriber[]) {
-    return this.broadcaster.send(message, Broadcast.resolveChannels(subscriber))
+    return this.transport.send(message, Broadcast.resolveChannels(subscriber))
   }
 
   /**
@@ -19,7 +19,7 @@ export default class Broadcast {
    *
    */
   public(message: MessageShape<unknown>) {
-    return this.broadcaster.send(message, this.publicChannels)
+    return this.transport.send(message, this.publicChannels)
   }
 
   /**
