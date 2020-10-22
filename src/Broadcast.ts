@@ -3,7 +3,7 @@ import { Transport, MessageShape, Subscriber } from './BroadcastContracts'
 export default class Broadcast {
   constructor(
     private readonly transport: Transport,
-    private readonly publicChannels: string[],
+    private readonly publicChannels: string[] = ['public'],
   ) {}
 
   /**
