@@ -2,14 +2,14 @@ import * as admin from 'firebase-admin'
 import Firestore from '../../src/Transports/Firestore'
 import * as jwt from 'jsonwebtoken'
 
-const app = admin.initializeApp({
-  credential: admin.credential.cert('.storage/firebase-service.json'),
-})
-
 /**
  *
  */
 xdescribe('Firestore transport', () => {
+  const app = admin.initializeApp({
+    credential: admin.credential.cert('.storage/firebase-service.json'),
+  })
+
   const firestoreTransport = new Firestore(app.firestore(), app.auth())
 
   test('#send Should persist data correctly on multiple channels', async () => {
