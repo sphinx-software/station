@@ -1,6 +1,10 @@
 {
   "name": "@sphinx-software/stationstation-icon.png",
   "version": "1.1.2",
+  "author": {
+    "name": "Rikky",
+    "email": "rikky@sphinx-software.com"
+  },
   "description": "Abstract Layer for realtime messaging & Push notification",
   "keywords": [
     "messaging",
@@ -8,6 +12,9 @@
     "subscription",
     "sphinx-software"
   ],
+  "repository": {
+    "url": "https://github.com/sphinx-software/station"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "pretty-quick --staged"
