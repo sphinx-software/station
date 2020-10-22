@@ -1,6 +1,6 @@
 {
   "name": "@sphinx-software/station",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Abstract Layer for realtime messaging & Push notification",
   "keywords": [
     "messaging",
