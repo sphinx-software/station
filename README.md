@@ -2,7 +2,7 @@
 
 # @sphinx-software/station
 
-Abstraction Layer for realtime messaging & push notification
+_Abstraction Layer for realtime messaging & push notification_
 
 `yarn`
 
@@ -19,7 +19,6 @@ For client-side implementation, please check `@sphinx-software/antenna`_
 
 - [Getting Started](#getting-started)
 
-  - [Configuration](#configuration)
   - [Realtime messaging](#realtime-messaging)
   - [Push notification](#push-notification)
 
@@ -33,8 +32,6 @@ For client-side implementation, please check `@sphinx-software/antenna`_
   - [Managing audience devices](#managing-audience-devices)
 
 # Getting Started
-
-## Configuration
 
 ## Realtime Messaging
 
