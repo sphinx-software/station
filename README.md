@@ -2,6 +2,11 @@
 
 # @sphinx-software/station
 
+[![Status](https://circleci.com/gh/sphinx-software/station.svg?style=svg)](https://app.circleci.com/pipelines/github/sphinx-software/station)
+![Version](https://img.shields.io/github/package-json/v/sphinx-software/station)
+![Issues](https://img.shields.io/github/issues-raw/sphinx-software/station)
+![License](https://img.shields.io/github/license/sphinx-software/station)
+
 _Abstraction Layer for realtime messaging & push notification_
 
 `yarn`
