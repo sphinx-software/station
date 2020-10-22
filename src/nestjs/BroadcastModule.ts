@@ -51,6 +51,7 @@ export default class BroadcastModule {
           useExisting: Broadcast,
         },
       ],
+      exports: [Broadcast, '@sphinx/station.Broadcast', 'Broadcast'],
     }
   }
 
