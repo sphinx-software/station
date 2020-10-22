@@ -1,5 +1,5 @@
 import * as admin from 'firebase-admin'
-import Firestore from '../../../src/Transports/Firestore'
+import Firestore from '../../src/Transports/Firestore'
 import * as jwt from 'jsonwebtoken'
 
 const app = admin.initializeApp({
@@ -9,7 +9,7 @@ const app = admin.initializeApp({
 /**
  *
  */
-describe('FirestoreBroadcaster', () => {
+xdescribe('Firestore', () => {
   const firestoreTransport = new Firestore(app.firestore(), app.auth())
 
   test('#send Should persist data correctly on multiple channels', async () => {
