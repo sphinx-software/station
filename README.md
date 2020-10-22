@@ -4,44 +4,46 @@
 
 Abstraction Layer for realtime messaging & push notification
 
-**This package is server implementation.
-For client-side implementation, please check `@sphinx-software/antenna`**
+_This package is server implementation.
+For client-side implementation, please check `@sphinx-software/antenna`_
 
-# Contents
+## Contents
 
-- Getting Started
-  - Installation
-  - Manual configuration
-  - (Optional) NestJS configuration with `StationModule`
+- [Getting Started](#getting-started)
 
-  - Realtime messaging
-    - The `Broadcast` service
-    - Supported transporters
-    - Sending public messages
-    - Sending private messages
-      - Define a subscriber
-      - Send a message to the subscriber
-  - Push notification
-    - The `Notifier` service
-    - Supported pushers
-    - Define an `Audience`
-    - Sending notification to client
-    - Pusher specific options
-  - Security
-    - Protected channels
-- Best practices
-  - Differentiate `Message` & `Notification`
-    - When to use Message
-    - When to use Notification
-    - Dual mode
-  - Managing the subscriptions
-  - Managing the audience devices
-- Advance topics
-  - Extending messaging transporter
-  - Extending notification pusher
+  - [Configuration](#configuration)
+  - [Realtime messaging](#realtime-messaging)
+  - [Push notification](#push-notification)
+
+- [Advance topics](#advance-topics)
+  - [How it works](#how-it-works)
+  - [Extending messaging transporter](#extending-messaging-transporter)
+  - [Extending notification pusher](#extending-notification-pusher)
+- [Best practices](#best-practices)
+  - [Understanding `Message` & `Notification`](#understanding-message--notification)
+  - [Managing subscriptions](#managing-the-subscriptions)
+  - [Managing audience devices](#managing-audience-devices)
 
 # Getting Started
 
-# Best practices
+## Configuration
+
+## Realtime Messaging
+
+## Push notification
 
 # Advance topics
+
+## How it works
+
+## Extending messaging transporter
+
+## Extending notification pusher
+
+# Best practices
+
+## Understanding `Message` & `Notification`
+
+## Managing the subscriptions
+
+## Managing audience devices
