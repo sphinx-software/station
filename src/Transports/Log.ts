@@ -8,7 +8,7 @@ export default class Log implements Transport {
     message: MessageShape<unknown>,
     channels: string[],
   ): Promise<void> {
-    this.logger.log({ message, channels }, 'Broadcast.Logger#send')
+    this.logger.log({ message, channels }, 'Messenger.Transport.Log#send')
     return Promise.resolve(undefined)
   }
 }
