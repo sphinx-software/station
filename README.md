@@ -94,21 +94,21 @@ Let's create one using `firestore` as our transport layer.
 💡 [Learn more about Firebase's Could Firestore](https://firebase.google.com/docs/firestore)
 
 ```ts
-import { Broadcast, transports } from '@sphinx-software/station'
+import { Messenger, transports } from '@sphinx-software/station'
 
 // ...
 
-const broadcast = new Broadcast(transports.firestore(firebase))
+const messenger = new Messenger(transports.firestore(firebase))
 ```
 
-Your `broadcast` is ready 🚀 . Now let's define a subscriber.
+Your `messenger` is ready 🚀 . Now let's define a subscriber.
 
 ```ts
-import { Subscriber } from '@sphinx-software/station'
+import { Topic } from '@sphinx-software/station'
 
-class AwesomeSubscriber implements Subscriber {
+class AwesomeTopic implements Topic {
   channel() {
-    return 'awesome-channel'
+    return 'topic-awesome'
   }
 }
 ```
@@ -118,17 +118,17 @@ Any class (or entity) can be a subscriber if they implement the `Subscriber` int
 
 ```ts
 // ... somewhere in your server-side code
-const myAwesomeSubscriber = new AwesomeSubscriber()
+const topic = new AwesomeTopic()
 
 // ... you can send a message to the subscriber
 const greetingMessage = {
-  topic: 'greetings',
+  type: 'greetings',
   payload: {
     hello: 'world',
   },
 }
 
-await broadcast.send(greetingMessage, myAwesomeSubscriber)
+await messenger.broadcast(greetingMessage, topic)
 ```
 
 ## Push Notification
