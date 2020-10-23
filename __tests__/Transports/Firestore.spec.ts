@@ -5,7 +5,7 @@ import Firestore from '../../src/Transports/Firestore'
 /**
  *
  */
-describe('Firestore transport', () => {
+xdescribe('Firestore transport', () => {
   const app = admin.initializeApp({
     credential: admin.credential.cert('.storage/firebase-service.json'),
   })
