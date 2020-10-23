@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin'
-import Firestore from '../../src/Transports/Firestore'
 import * as jwt from 'jsonwebtoken'
+import Firestore from '../../src/Transports/Firestore'
 
 /**
  *
@@ -14,7 +14,7 @@ xdescribe('Firestore transport', () => {
 
   test('#send Should persist data correctly on multiple channels', async () => {
     const message = {
-      topic: 'test-topic',
+      type: 'test-topic',
       payload: {
         foo: 'bar',
       },
@@ -43,13 +43,10 @@ xdescribe('Firestore transport', () => {
   })
 
   test('#grant Should give an JWT which includes the granted channel list as payload', async () => {
-    const granted = await firestoreTransport.grant(
-      {
-        id: 'test-id',
-        type: 'test-credential',
-      },
-      ['test-channel-1', 'test-channel-2'],
-    )
+    const granted = await firestoreTransport.grant('test-id', [
+      'test-channel-1',
+      'test-channel-2',
+    ])
 
     expect(
       (jwt.decode(granted.token) as any)['claims']['privateChannels'],

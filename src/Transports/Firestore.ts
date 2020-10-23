@@ -1,14 +1,9 @@
 import {
   Transport,
   MessageShape,
-  SupportPrivateChannels,
-} from '../BroadcastContracts'
+  HasPrivateChannels,
+} from '../MessagingContracts'
 import * as admin from 'firebase-admin'
-
-type SubscriberCredential = {
-  id: string | number
-  type: string
-}
 
 type JWTGrantedEntity = {
   token: string
@@ -20,9 +15,7 @@ type JWTGrantedEntity = {
  *
  */
 export default class Firestore
-  implements
-    Transport,
-    SupportPrivateChannels<SubscriberCredential, JWTGrantedEntity> {
+  implements Transport, HasPrivateChannels<JWTGrantedEntity> {
   constructor(
     private readonly firestore: admin.firestore.Firestore,
     private readonly auth: admin.auth.Auth,
@@ -30,7 +23,7 @@ export default class Firestore
   ) {}
 
   async grant(
-    credential: SubscriberCredential,
+    subscriberId: string,
     privateChannels: string[],
   ): Promise<JWTGrantedEntity> {
     // We'll use the custom token mechanism from Firebase to
@@ -41,10 +34,7 @@ export default class Firestore
     const claims = {
       privateChannels,
     }
-    const token = await this.auth.createCustomToken(
-      credential.id.toString(),
-      claims,
-    )
+    const token = await this.auth.createCustomToken(subscriberId, claims)
 
     return {
       token,

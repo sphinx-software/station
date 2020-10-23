@@ -1,5 +1,5 @@
-import { Subscriber, MessageShape, Transport } from './BroadcastContracts'
-import Broadcast from './Broadcast'
+import { Subscriber, MessageShape, Transport } from './MessagingContracts'
+import Messenger from './Messenger'
 import * as nestjs from './nestjs'
 import * as transports from './Transports'
 
@@ -8,7 +8,7 @@ export {
   Subscriber,
   MessageShape,
   Transport,
-  Broadcast,
+  Messenger,
   // ... todo notification related
 
   // Sub namespaces

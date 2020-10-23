@@ -1,5 +1,5 @@
 import * as admin from 'firebase-admin'
-import { MessageShape, Subscriber } from './BroadcastContracts'
+import { MessageShape, Subscriber } from './MessagingContracts'
 
 // Package contracts
 

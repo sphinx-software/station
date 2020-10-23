@@ -29,10 +29,10 @@ For client-side implementation, please check `@sphinx-software/antenna`_
 ## Contents
 
 - [Getting Started](#getting-started)
-
   - [Realtime Messaging](#realtime-messaging)
+    - [Sending messages to subscribers](#sending-messages-to-subscribers)
+    - [Broadcasting messages to topic](#broadcasting-messages-to-topic)
   - [Push Notification](#push-notification)
-
 - [Advance topics](#advance-topics)
   - [How it works](#how-it-works)
   - [Supported services](#supported-services)
@@ -88,47 +88,83 @@ check [Push Notification](#push-notification) section for sending notifications 
 
 ## Realtime Messaging
 
-We support realtime messaging via `Broadcast` service.
+We support realtime messaging via `Messenger` service.
 Let's create one using `firestore` as our transport layer.
 
 💡 [Learn more about Firebase's Could Firestore](https://firebase.google.com/docs/firestore)
 
 ```ts
-import { Broadcast, transports } from '@sphinx-software/station'
+import { Messenger, transports } from '@sphinx-software/station'
 
 // ...
 
-const broadcast = new Broadcast(transports.firestore(firebase))
+const messenger = new Messenger(transports.firestore(firebase))
 ```
 
-Your `broadcast` is ready 🚀 . Now let's define a subscriber.
+Your `messenger` is ready 🚀
+
+### Sending messages to subscribers
+
+Define your subscriber by implementing the `Subscriber` interface
 
 ```ts
 import { Subscriber } from '@sphinx-software/station'
 
 class AwesomeSubscriber implements Subscriber {
-  channel() {
-    return 'awesome-channel'
+  identifier() {
+    return 'awesome'
+  }
+
+  inbound() {
+    return `subscriber-${this.identifier()}`
   }
 }
 ```
 
-Any class (or entity) can be a subscriber if they implement the `Subscriber` interface.
-`Broadcast` now can send messages to that subscriber through its channel.
+Now, we can send the message to that subscriber by using `messenger.send()` method
 
 ```ts
 // ... somewhere in your server-side code
-const myAwesomeSubscriber = new AwesomeSubscriber()
-
-// ... you can send a message to the subscriber
-const greetingMessage = {
-  topic: 'greetings',
+const message = {
+  type: 'Greetings',
   payload: {
     hello: 'world',
   },
 }
 
-await broadcast.send(greetingMessage, myAwesomeSubscriber)
+// ... you can send a message to the subscriber
+await messenger.send(message, new AwesomeSubscriber())
+```
+
+### Broadcasting messages to topic
+
+First let's create a topic:
+
+```ts
+import { Topic } from '@sphinx-software/station'
+
+class AwesomeTopic implements Topic {
+  channel() {
+    return 'topic-awesome'
+  }
+}
+```
+
+Then we can broadcast a message to the `AwesomeTopic`:
+
+```ts
+// ... somewhere in your server-side code
+const topic = new AwesomeTopic()
+
+// ... you can broadcast a message
+const greetingMessage = {
+  type: 'greetings',
+  payload: {
+    hello: 'world',
+  },
+}
+
+await messenger.broadcast(greetingMessage, topic)
 ```
 
 ## Push Notification
