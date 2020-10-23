@@ -29,10 +29,10 @@ For client-side implementation, please check `@sphinx-software/antenna`_
 ## Contents
 
 - [Getting Started](#getting-started)
-
   - [Realtime Messaging](#realtime-messaging)
+    - [Sending messages to subscribers](#sending-messages-to-subscribers)
+    - [Broadcasting messages to topic](#broadcasting-messages-to-topic)
   - [Push Notification](#push-notification)
-
 - [Advance topics](#advance-topics)
   - [How it works](#how-it-works)
   - [Supported services](#supported-services)
@@ -88,7 +88,7 @@ check [Push Notification](#push-notification) section for sending notifications 
 
 ## Realtime Messaging
 
-We support realtime messaging via `Broadcast` service.
+We support realtime messaging via `Messenger` service.
 Let's create one using `firestore` as our transport layer.
 
 💡 [Learn more about Firebase's Could Firestore](https://firebase.google.com/docs/firestore)
@@ -101,7 +101,13 @@ import { Messenger, transports } from '@sphinx-software/station'
 const messenger = new Messenger(transports.firestore(firebase))
 ```
 
-Your `messenger` is ready 🚀 . Now let's define a subscriber.
+Your `messenger` is ready 🚀
+
+### Sending messages to subscribers
+
+### Broadcasting messages to topic
+
+First let's create a topic:
 
 ```ts
 import { Topic } from '@sphinx-software/station'
@@ -113,8 +119,7 @@ class AwesomeTopic implements Topic {
 }
 ```
 
-Any class (or entity) can be a subscriber if they implement the `Subscriber` interface.
-`Broadcast` now can send messages to that subscriber through its channel.
+Then we can broadcast a message to the `AwesomeTopic`:
 
 ```ts
 // ... somewhere in your server-side code
