@@ -1,5 +1,6 @@
 import { Messenger, Subscriber, Transport } from '../src'
 import Mock = jest.Mock
+import { Topic } from '../src/MessagingContracts'
 
 describe('Messenger', () => {
   const MockTransport = jest.fn<Transport, []>(() => ({
@@ -11,14 +12,18 @@ describe('Messenger', () => {
     inbound: jest.fn(),
   }))
 
+  const Topic = jest.fn<Topic, []>(() => ({
+    channel: jest.fn(),
+  }))
+
   const transport = new MockTransport()
-  const broadcast = new Messenger(transport)
+  const messenger = new Messenger(transport)
 
   beforeEach(() => {
     ;(transport.send as Mock).mockClear()
   })
 
-  it('.send to one subscriber', async () => {
+  it('.send() to one subscriber', async () => {
     const message = {
       type: 'test-topic',
       payload: {
@@ -29,11 +34,11 @@ describe('Messenger', () => {
 
     ;(subscriber.inbound as Mock).mockReturnValue('test-channel')
 
-    await broadcast.send(message, subscriber)
+    await messenger.send(message, subscriber)
     expect(transport.send).toHaveBeenCalledWith(message, ['test-channel'])
   })
 
-  it('.send to multiple subscribers', async () => {
+  it('.send() to multiple subscribers', async () => {
     const message = {
       type: 'test-topic',
       payload: {
@@ -46,10 +51,33 @@ describe('Messenger', () => {
     const subscriber2 = new Subscriber()
     ;(subscriber2.inbound as Mock).mockReturnValue('test-channel-2')
 
-    await broadcast.send(message, [subscriber1, subscriber2])
+    await messenger.send(message, [subscriber1, subscriber2])
     expect(transport.send).toHaveBeenCalledWith(message, [
       'test-channel-1',
       'test-channel-2',
+    ])
+  })
+
+  it('.broadcast() message to topic', async () => {
+    const message = {
+      type: 'test-topic',
+      payload: {
+        foo: 'bar',
+      },
+    }
+
+    const topic = new Topic()
+
+    ;(topic.channel as Mock).mockReturnValue([
+      'test-topic-channel-1',
+      'test-topic-channel-2',
+    ])
+
+    await messenger.broadcast(message, topic)
+
+    expect(transport.send).toHaveBeenCalledWith(message, [
+      'test-topic-channel-1',
+      'test-topic-channel-2',
     ])
   })
 })
