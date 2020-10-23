@@ -105,6 +105,37 @@ Your `messenger` is ready 🚀
 
 ### Sending messages to subscribers
 
+Define your subscriber by implementing the `Subscriber` interface
+
+```ts
+import { Subscriber } from '@sphinx-software/station'
+
+class AwesomeSubscriber implements Subscriber {
+  identifier() {
+    return 'awesome'
+  }
+
+  inbound() {
+    return `subscriber-${this.identifier()}`
+  }
+}
+```
+
+Now, we can send the message to that subscriber by using `messenger.send()` method
+
+```ts
+// ... somewhere in your server-side code
+const message = {
+  type: 'Greetings',
+  payload: {
+    hello: 'world',
+  },
+}
+
+// ... you can send a message to the subscriber
+await messenger.send(message, new AwesomeSubscriber())
+```
+
 ### Broadcasting messages to topic
 
 First let's create a topic:
@@ -125,7 +156,7 @@ Then we can broadcast a message to the `AwesomeTopic`:
 // ... somewhere in your server-side code
 const topic = new AwesomeTopic()
 
-// ... you can send a message to the subscriber
+// ... you can broadcast a message
 const greetingMessage = {
   type: 'greetings',
   payload: {
