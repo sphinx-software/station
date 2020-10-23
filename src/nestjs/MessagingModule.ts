@@ -1,9 +1,9 @@
 import admin from 'firebase-admin'
-import Broadcast from '../Broadcast'
+import Messenger from '../Messenger'
 import FirestoreTransport from '../Transports/Firestore'
 import LogTransport from '../Transports/Log'
 import { Provider } from '@nestjs/common'
-import { Transport } from '../BroadcastContracts'
+import { Transport } from '../MessagingContracts'
 
 type BroadcastConfig = {
   // The transport that will be used
@@ -26,28 +26,27 @@ type SupportedTransports = {
   [transport: string]: TransportFactory<any, Transport>
 }
 
-export default class BroadcastModule {
+export default class MessagingModule {
   static register(config: BroadcastConfig) {
-    const provider: Provider<Broadcast> =
+    const provider: Provider<Messenger> =
       'string' === typeof config.using
         ? this.provideByFactory(config)
         : {
-            provide: Broadcast,
-            useFactory: () =>
-              new Broadcast(config.using as Transport, config.publicChannels),
+            provide: Messenger,
+            useFactory: () => new Messenger(config.using as Transport),
           }
 
     return {
-      module: BroadcastModule,
+      module: MessagingModule,
       global: true,
       providers: [provider],
-      exports: [Broadcast],
+      exports: [Messenger],
     }
   }
 
   private static provideByFactory(
     config: BroadcastConfig,
-  ): Provider<Broadcast> {
+  ): Provider<Messenger> {
     const transportFactory = this.supportedTransports()[config.using as string]
 
     if (!transportFactory) {
@@ -55,13 +54,12 @@ export default class BroadcastModule {
     }
 
     return {
-      provide: Broadcast,
+      provide: Messenger,
       useFactory: (...dependencies: unknown[]) => {
-        return new Broadcast(
+        return new Messenger(
           transportFactory.factory(config.transports[config.using as string])(
             ...dependencies,
           ),
-          config.publicChannels,
         )
       },
       inject: transportFactory.inject,

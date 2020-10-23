@@ -1,4 +1,4 @@
-import { MessageShape, Transport } from '../BroadcastContracts'
+import { MessageShape, Transport } from '../MessagingContracts'
 
 export type InlineCallback = (
   message: MessageShape<unknown>,

@@ -1,3 +1,3 @@
-import BroadcastModule from './BroadcastModule'
+import MessagingModule from './MessagingModule'
 
-export { BroadcastModule }
+export { MessagingModule }

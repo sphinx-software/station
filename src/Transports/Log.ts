@@ -1,4 +1,4 @@
-import { MessageShape, Transport } from '../BroadcastContracts'
+import { MessageShape, Transport } from '../MessagingContracts'
 export type Logger = {
   log(data: any, context: string): void
 }

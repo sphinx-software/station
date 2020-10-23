@@ -1,17 +1,18 @@
-import { Broadcast, Subscriber, Transport } from '../src'
+import { Messenger, Subscriber, Transport } from '../src'
 import Mock = jest.Mock
 
-describe('Broadcast', () => {
+describe('Messenger', () => {
   const MockTransport = jest.fn<Transport, []>(() => ({
     send: jest.fn(),
   }))
 
   const Subscriber = jest.fn<Subscriber, []>(() => ({
-    channel: jest.fn(),
+    identifier: jest.fn(),
+    inbound: jest.fn(),
   }))
 
   const transport = new MockTransport()
-  const broadcast = new Broadcast(transport, ['public'])
+  const broadcast = new Messenger(transport)
 
   beforeEach(() => {
     ;(transport.send as Mock).mockClear()
@@ -19,14 +20,14 @@ describe('Broadcast', () => {
 
   it('.send to one subscriber', async () => {
     const message = {
-      topic: 'test-topic',
+      type: 'test-topic',
       payload: {
         foo: 'bar',
       },
     }
     const subscriber = new Subscriber()
 
-    ;(subscriber.channel as Mock).mockReturnValue('test-channel')
+    ;(subscriber.inbound as Mock).mockReturnValue('test-channel')
 
     await broadcast.send(message, subscriber)
     expect(transport.send).toHaveBeenCalledWith(message, ['test-channel'])
@@ -34,34 +35,21 @@ describe('Broadcast', () => {
 
   it('.send to multiple subscribers', async () => {
     const message = {
-      topic: 'test-topic',
+      type: 'test-topic',
       payload: {
         foo: 'bar',
       },
     }
     const subscriber1 = new Subscriber()
-    ;(subscriber1.channel as Mock).mockReturnValue('test-channel-1')
+    ;(subscriber1.inbound as Mock).mockReturnValue('test-channel-1')
 
     const subscriber2 = new Subscriber()
-    ;(subscriber2.channel as Mock).mockReturnValue('test-channel-2')
+    ;(subscriber2.inbound as Mock).mockReturnValue('test-channel-2')
 
     await broadcast.send(message, [subscriber1, subscriber2])
     expect(transport.send).toHaveBeenCalledWith(message, [
       'test-channel-1',
       'test-channel-2',
     ])
-  })
-
-  it('.public', async () => {
-    const message = {
-      topic: 'test-topic',
-      payload: {
-        foo: 'bar',
-      },
-    }
-
-    await broadcast.public(message)
-
-    expect(transport.send).toHaveBeenCalledWith(message, ['public'])
   })
 })
