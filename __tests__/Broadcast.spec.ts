@@ -8,7 +8,7 @@ describe('Messenger', () => {
   }))
 
   const Subscriber = jest.fn<Subscriber, []>(() => ({
-    identifier: jest.fn(),
+    uid: jest.fn(),
     inbound: jest.fn(),
   }))
 

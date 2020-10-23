@@ -12,7 +12,7 @@ export declare type MessageShape<PayloadShape> = {
  *
  */
 export interface Subscriber {
-  identifier(): string
+  uid(): string
   inbound(): string
 }
 

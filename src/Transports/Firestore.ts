@@ -23,7 +23,7 @@ export default class Firestore
   ) {}
 
   async grant(
-    subscriberId: string,
+    uid: string,
     privateChannels: string[],
   ): Promise<JWTGrantedEntity> {
     // We'll use the custom token mechanism from Firebase to
@@ -34,7 +34,7 @@ export default class Firestore
     const claims = {
       privateChannels,
     }
-    const token = await this.auth.createCustomToken(subscriberId, claims)
+    const token = await this.auth.createCustomToken(uid, claims)
 
     return {
       token,
