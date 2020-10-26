@@ -3,5 +3,5 @@
  *
  */
 export interface Topic {
-  channel(): string | string[]
+  topicName(): string
 }

@@ -1,50 +1,74 @@
-import * as admin from 'firebase-admin'
-import { MessageShape, Subscriber } from './MessagingContracts'
+import { Topic } from './Topic'
 
-// Package contracts
-
+/**
+ * Represents an audience (who will receive the notification)
+ */
 export interface Audience {
+  /**
+   * Get list of the devices that current Audience is having
+   *
+   */
   devices(): string[]
 }
 
-type Content = {
-  title: string
-  body: string
-  imageUrl?: string
-}
-
-export interface Notification {
+/**
+ * The base notification shape
+ *
+ */
+export interface BaseNotification {
   via?: string | string[]
-  content(): Content
-  audience(): Audience
-  data(): Record<string, string>
+  content(): {
+    title: string
+    body: string
+    imageUrl?: string
+  }
 }
 
+/**
+ * The personal notification (sent to Audience)
+ *
+ */
+export type PersonalNotification = {
+  /**
+   * Get the Audience of this notification
+   *
+   */
+  audience(): string | string[] | Audience
+} & BaseNotification
+
+/**
+ * The topic notification (sent to a Topic)
+ *
+ */
+export type TopicNotification = {
+  topic(): string | Topic
+} & BaseNotification
+
+/**
+ *
+ */
+type Notification = PersonalNotification | TopicNotification
+
+/**
+ * Represent a Notification Store. Which can save the notifications
+ *
+ */
 export interface Store {
-  save(notification: Notification[]): Promise<void>
+  /**
+   * Save the notification to the store
+   *
+   */
+  save(notifications: Notification[]): Promise<void>
 }
 
+/**
+ * Represent a Notification Pusher. Which can send the notifications
+ *
+ */
 export interface Pusher {
-  push(notification: Notification): Promise<void>
-  bulk(notifications: Notification[]): Promise<void>
-}
-
-// Pusher specific contracts
-
-type FCMOptions = {
-  data?: { [key: string]: string }
-  notification?: admin.messaging.Notification
-  android?: admin.messaging.AndroidConfig
-  webpush?: admin.messaging.WebpushConfig
-  apns?: admin.messaging.ApnsConfig
-  fcmOptions?: admin.messaging.FcmOptions
-}
-
-export interface ViaFCM {
-  fcmOptions(): FCMOptions
-}
-
-export interface ViaBroadcast {
-  subscriber(): Subscriber
-  message<Payload>(): MessageShape<Payload>
+  /**
+   * Send notifications
+   *
+   */
+  send(notifications: Notification[]): Promise<void>
 }
