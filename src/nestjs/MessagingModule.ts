@@ -1,9 +1,8 @@
 import admin from 'firebase-admin'
 import Messenger from '../Messenger'
-import FirestoreTransport from '../Transports/Firestore'
-import LogTransport from '../Transports/Log'
 import { Provider } from '@nestjs/common'
 import { Transport } from '../MessagingContracts'
+import * as transports from '../Transports'
 
 type BroadcastConfig = {
   // The transport that will be used
@@ -50,7 +49,7 @@ export default class MessagingModule {
     const transportFactory = this.supportedTransports()[config.using as string]
 
     if (!transportFactory) {
-      throw new Error(`Transport ${config.using} is not supported`)
+      throw new Error(`Transport ${config.using} is not supported.`)
     }
 
     return {
@@ -70,11 +69,15 @@ export default class MessagingModule {
     return {
       firestore: {
         factory: ({ firebase }: { firebase: admin.app.App }) => () =>
-          new FirestoreTransport(firebase.firestore(), firebase.auth()),
+          transports.firestore(firebase),
         inject: [],
       },
       log: {
-        factory: ({ logger }) => () => new LogTransport(logger),
+        factory: ({ logger }) => () => transports.log(logger),
+        inject: [],
+      },
+      inline: {
+        factory: ({ callback }) => () => transports.inline(callback),
         inject: [],
       },
     }
