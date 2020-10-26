@@ -1,9 +1,5 @@
-import {
-  Transport,
-  MessageShape,
-  Subscriber,
-  Topic,
-} from './MessagingContracts'
+import { Transport, MessageShape, Subscriber } from './MessagingContracts'
+import { Topic } from './Topic'
 
 export default class Messenger {
   constructor(private readonly transport: Transport) {}

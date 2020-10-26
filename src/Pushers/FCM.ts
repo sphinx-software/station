@@ -2,7 +2,7 @@ import { ViaFCM, Notification, Pusher, Store } from '../NotificationContracts'
 import * as admin from 'firebase-admin'
 import Messaging = admin.messaging.Messaging
 
-export default class FCMPusher implements Pusher {
+export default class FCM implements Pusher {
   constructor(private readonly fcm: Messaging, private readonly store: Store) {}
 
   public bulk(notifications: Notification[]): Promise<void> {

@@ -1,6 +1,5 @@
-import { Messenger, Subscriber, Transport } from '../src'
+import { Messenger, Subscriber, Transport, Topic } from '../src'
 import Mock = jest.Mock
-import { Topic } from '../src/MessagingContracts'
 
 describe('Messenger', () => {
   const MockTransport = jest.fn<Transport, []>(() => ({
