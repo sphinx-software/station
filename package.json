@@ -26,7 +26,8 @@
     "tsc": "tsc",
     "jest": "jest",
     "test": "jest",
-    "build": "rimraf build types && tsc",
+    "prebuild": "rimraf build types",
+    "build": "tsc",
     "prepublish": "rimraf build types && tsc",
     "start": "jest --watch"
   },
