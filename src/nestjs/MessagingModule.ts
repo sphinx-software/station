@@ -2,7 +2,7 @@ import admin from 'firebase-admin'
 import Messenger from '../Messenger'
 import { Provider } from '@nestjs/common'
 import { Transport } from '../MessagingContracts'
-import { transports } from '../index'
+import * as transports from '../Transports'
 
 type BroadcastConfig = {
   // The transport that will be used
