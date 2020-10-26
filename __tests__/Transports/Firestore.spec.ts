@@ -10,7 +10,10 @@ describe('Firestore transport', () => {
     credential: admin.credential.cert(
       process.env.GOOGLE_APPLICATION_CREDENTIALS || {
         projectId: process.env.GOOGLE_SERVICE_PROJECT_ID,
-        privateKey: process.env.GOOGLE_SERVICE_PRIVATE_KEY,
+        privateKey: new Buffer(
+          process.env.GOOGLE_SERVICE_PRIVATE_KEY as string,
+          'base64',
+        ).toString('utf-8'),
         clientEmail: process.env.GOOGLE_SERVICE_CLIENT_EMAIL,
       },
     ),
