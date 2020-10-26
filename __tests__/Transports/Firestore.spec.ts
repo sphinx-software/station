@@ -19,14 +19,15 @@ describe('Firestore transport', () => {
     ),
   })
 
+  const collectionName =
+    'sphinx-stations-integration-test-channels' + new Date().getTime()
+
   const firestoreTransport = new Firestore(
     app.firestore(),
     app.auth(),
-    'sphinx-stations-integration-test-channels',
+    collectionName,
   )
-  const collection = app
-    .firestore()
-    .collection('sphinx-stations-integration-test-channels')
+  const collection = app.firestore().collection(collectionName)
 
   const cleanUpFireStore = async (
     collection: admin.firestore.CollectionReference,
