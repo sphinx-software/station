@@ -119,6 +119,5 @@ dist
 .idea
 
 # Project
-.storage/firebase-service.json
 types
 build
