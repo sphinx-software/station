@@ -4,6 +4,7 @@ import FirestoreTransport from '../Transports/Firestore'
 import LogTransport from '../Transports/Log'
 import { Provider } from '@nestjs/common'
 import { Transport } from '../MessagingContracts'
+import Inline from '../Transports/Inline'
 
 type BroadcastConfig = {
   // The transport that will be used
@@ -75,6 +76,10 @@ export default class MessagingModule {
       },
       log: {
         factory: ({ logger }) => () => new LogTransport(logger),
+        inject: [],
+      },
+      inline: {
+        factory: ({ callback }) => () => new Inline(callback),
         inject: [],
       },
     }
