@@ -111,12 +111,12 @@ Define your subscriber by implementing the `Subscriber` interface
 import { Subscriber } from '@sphinx-software/station'
 
 class AwesomeSubscriber implements Subscriber {
-  identifier() {
+  uid() {
     return 'awesome'
   }
 
   inbound() {
-    return `subscriber-${this.identifier()}`
+    return `subscriber-${this.uid()}`
   }
 }
 ```
