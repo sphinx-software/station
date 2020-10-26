@@ -9,7 +9,7 @@ describe('Firestore transport', () => {
   const app = admin.initializeApp({
     credential: admin.credential.cert(
       process.env.GOOGLE_APPLICATION_CREDENTIALS || {
-        projectId: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+        projectId: process.env.GOOGLE_SERVICE_PROJECT_ID,
         privateKey: process.env.GOOGLE_SERVICE_PRIVATE_KEY,
         clientEmail: process.env.GOOGLE_SERVICE_CLIENT_EMAIL,
       },
