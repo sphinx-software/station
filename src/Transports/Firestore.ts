@@ -5,41 +5,38 @@ import {
 } from '../MessagingContracts'
 import * as admin from 'firebase-admin'
 
-type JWTGrantedEntity = {
-  token: string
-  claims: { privateChannels: string[] }
-}
-
 /**
  * We'll utilize the Firebase firestore service for channel
  *
  */
 export default class Firestore
-  implements Transport, HasPrivateChannels<JWTGrantedEntity> {
+  implements Transport, HasPrivateChannels<string> {
   constructor(
     private readonly firestore: admin.firestore.Firestore,
     private readonly auth: admin.auth.Auth,
     private readonly collection: string = 'channels',
   ) {}
 
-  async grant(
-    uid: string,
-    privateChannels: string[],
-  ): Promise<JWTGrantedEntity> {
-    // We'll use the custom token mechanism from Firebase to
-    // generate the related token to the user.
-    //
-    // The client app can use this token later on for subscribing to the
-    // realtime database
-    const claims = {
-      privateChannels,
-    }
-    const token = await this.auth.createCustomToken(uid, claims)
+  async grant(uid: string, channels: string[]): Promise<string> {
+    const token = await this.auth.createCustomToken(uid, {
+      type: 'station.subscriber',
+    })
 
-    return {
-      token,
-      claims,
-    }
+    const batch = this.firestore.batch()
+
+    channels.forEach((channel) => {
+      batch.set(
+        this.firestore.collection(this.collection).doc(channel),
+        {
+          subscribers: admin.firestore.FieldValue.arrayUnion(uid),
+        },
+        { merge: true },
+      )
+    })
+
+    await batch.commit()
+
+    return token
   }
 
   async send(
@@ -51,7 +48,26 @@ export default class Firestore
     channels.forEach((channel) => {
       batch.set(
         this.firestore.collection(this.collection).doc(channel),
-        message,
+        {
+          message,
+        },
+        { merge: true },
+      )
+    })
+
+    await batch.commit()
+  }
+
+  public async revoke(uid: string, channels: string[]) {
+    const batch = this.firestore.batch()
+
+    channels.forEach((channel) => {
+      batch.set(
+        this.firestore.collection(this.collection).doc(channel),
+        {
+          subscribers: admin.firestore.FieldValue.arrayRemove(uid),
+        },
+        { merge: true },
       )
     })
 

@@ -5,12 +5,40 @@ import Firestore from '../../src/Transports/Firestore'
 /**
  *
  */
-xdescribe('Firestore transport', () => {
+describe('Firestore transport', () => {
   const app = admin.initializeApp({
     credential: admin.credential.cert('.storage/firebase-service.json'),
   })
 
-  const firestoreTransport = new Firestore(app.firestore(), app.auth())
+  const firestoreTransport = new Firestore(
+    app.firestore(),
+    app.auth(),
+    'sphinx-stations-integration-test-channels',
+  )
+  const collection = app
+    .firestore()
+    .collection('sphinx-stations-integration-test-channels')
+
+  const cleanUpFireStore = async (
+    collection: admin.firestore.CollectionReference,
+  ) => {
+    const docs = await collection.get()
+    const batch = app.firestore().batch()
+
+    docs.forEach((doc) => {
+      batch.delete(doc.ref)
+    })
+
+    await batch.commit()
+  }
+
+  beforeAll(async () => {
+    await cleanUpFireStore(collection)
+  })
+
+  afterAll(async () => {
+    await cleanUpFireStore(collection)
+  })
 
   test('#send Should persist data correctly on multiple channels', async () => {
     const message = {
@@ -26,30 +54,52 @@ xdescribe('Firestore transport', () => {
       'test-channel-3',
     ])
 
-    const messageOnChannel1 = await app
-      .firestore()
-      .collection('channels')
-      .doc('test-channel-1')
-      .get()
+    const channel1 = await collection.doc('test-channel-1').get()
 
-    const messageOnChannel2 = await app
-      .firestore()
-      .collection('channels')
-      .doc('test-channel-2')
-      .get()
+    const channel2 = await collection.doc('test-channel-2').get()
 
-    expect(messageOnChannel1.data()).toEqual(message)
-    expect(messageOnChannel2.data()).toEqual(message)
+    expect(channel1.data()?.message).toEqual(message)
+    expect(channel2.data()?.message).toEqual(message)
   })
 
-  test('#grant Should give an JWT which includes the granted channel list as payload', async () => {
-    const granted = await firestoreTransport.grant('test-id', [
+  test('#grant & #revoke should save / delete the list of subscriber uid in the channel.subscribers field correctly', async () => {
+    const granted1 = await firestoreTransport.grant('test-id-1', [
       'test-channel-1',
       'test-channel-2',
     ])
 
-    expect(
-      (jwt.decode(granted.token) as any)['claims']['privateChannels'],
-    ).toEqual(['test-channel-1', 'test-channel-2'])
+    const granted2 = await firestoreTransport.grant('test-id-2', [
+      'test-channel-1',
+    ])
+
+    const channel1 = await collection.doc('test-channel-1').get()
+    const channel2 = await collection.doc('test-channel-2').get()
+
+    expect(channel1.data()?.subscribers).toContain('test-id-1')
+    expect(channel1.data()?.subscribers).toContain('test-id-2')
+
+    expect(channel2.data()?.subscribers).toContain('test-id-1')
+    expect(channel2.data()?.subscribers).not.toContain('test-id-2')
+
+    expect((jwt.decode(granted1) as any).uid).toEqual('test-id-1')
+    expect((jwt.decode(granted1) as any).claims.type).toEqual(
+      'station.subscriber',
+    )
+    expect((jwt.decode(granted2) as any).uid).toEqual('test-id-2')
+    expect((jwt.decode(granted2) as any).claims.type).toEqual(
+      'station.subscriber',
+    )
+
+    // Re-fetch after deletion
+    await firestoreTransport.revoke('test-id-1', [
+      'test-channel-1',
+      'test-channel-2',
+    ])
+    const updatedChannel1 = await channel1.ref.get()
+    const updatedChannel2 = await channel2.ref.get()
+
+    expect(updatedChannel1.data()?.subscribers).not.toContain('test-id-1')
+    expect(updatedChannel1.data()?.subscribers).toContain('test-id-2')
+    expect(updatedChannel2.data()?.subscribers).not.toContain('test-id-1')
   })
 })
