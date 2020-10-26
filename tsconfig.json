@@ -5,7 +5,7 @@
     "declarationDir": "./types",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "target": "ESNext",
+    "target": "ES2018",
     "sourceMap": true,
     "module": "CommonJS",
     "moduleResolution": "node",
