@@ -7,7 +7,13 @@ import Firestore from '../../src/Transports/Firestore'
  */
 describe('Firestore transport', () => {
   const app = admin.initializeApp({
-    credential: admin.credential.cert('.storage/firebase-service.json'),
+    credential: admin.credential.cert(
+      process.env.GOOGLE_APPLICATION_CREDENTIALS || {
+        projectId: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+        privateKey: process.env.GOOGLE_SERVICE_PRIVATE_KEY,
+        clientEmail: process.env.GOOGLE_SERVICE_CLIENT_EMAIL,
+      },
+    ),
   })
 
   const firestoreTransport = new Firestore(
