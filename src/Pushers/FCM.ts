@@ -1,31 +1,51 @@
-import { ViaFCM, Notification, Pusher, Store } from '../NotificationContracts'
+import {
+  Notification,
+  Pusher,
+  SupportsSubscriptions,
+} from '../NotificationContracts'
 import * as admin from 'firebase-admin'
-import Messaging = admin.messaging.Messaging
+import { ViaFCM } from '../PusherSpecificContracts'
 
-export default class FCM implements Pusher {
-  constructor(private readonly fcm: Messaging, private readonly store: Store) {}
+type FCMAwareNotification = Notification | ViaFCM
 
-  public bulk(notifications: Notification[]): Promise<void> {
-    return Promise.resolve(undefined)
-  }
+export default class FCM implements Pusher, SupportsSubscriptions {
+  constructor(private readonly fcm: admin.messaging.Messaging) {}
 
-  public async push(notification: Notification): Promise<void> {
+  public async send(
+    notification: FCMAwareNotification,
+    devices: string[],
+  ): Promise<void> {
     await this.fcm.sendMulticast({
-      ...this.translateToFCMMessage(notification),
-      tokens: notification.audience().devices(),
+      notification: (notification as Notification).content(),
+      tokens: devices,
+      ...(notification as ViaFCM).fcmOptions(),
+      data: {
+        ...((notification as ViaFCM).fcmOptions().data || {}),
+        uid: (notification as Notification).uid(),
+      },
     })
-    return Promise.resolve(undefined)
   }
 
-  translateToFCMMessage(notification: Notification | ViaFCM) {
-    const fcmOptions =
-      'function' === typeof (notification as ViaFCM)['fcmOptions']
-        ? (notification as ViaFCM).fcmOptions()
-        : {}
-    return {
+  public async broadcast(
+    notification: FCMAwareNotification,
+    topic: string,
+  ): Promise<void> {
+    await this.fcm.send({
       notification: (notification as Notification).content(),
-      data: (notification as Notification).data(),
-      ...fcmOptions,
-    }
+      topic,
+      ...(notification as ViaFCM).fcmOptions(),
+      data: {
+        ...((notification as ViaFCM).fcmOptions().data || {}),
+        uid: (notification as Notification).uid(),
+      },
+    })
+  }
+
+  public async subscribe(devices: string[], topic: string): Promise<void> {
+    await this.fcm.subscribeToTopic(devices, topic)
+  }
+
+  public async unsubscribe(devices: string[], topic: string): Promise<void> {
+    await this.fcm.unsubscribeFromTopic(devices, topic)
   }
 }
