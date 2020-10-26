@@ -41,8 +41,16 @@ export interface Transport {
  */
 export interface HasPrivateChannels<GrantEntity> {
   /**
-   * Grant the permissions to subscriber to listening on the private channels
+   * Grant the permissions to subscriber
+   * for listening on the private channels
    *
    */
-  grant(id: string, channels: string[]): Promise<GrantEntity>
+  grant(uid: string, channels: string[]): Promise<GrantEntity>
+
+  /**
+   * Revoke the listening permissions
+   * on the given channels
+   *
+   */
+  revoke(uid: string, channels: string[]): Promise<void>
 }
