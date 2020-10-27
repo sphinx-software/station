@@ -17,28 +17,6 @@ export default class Firestore
     private readonly collection: string = 'channels',
   ) {}
 
-  async grant(uid: string, channels: string[]): Promise<string> {
-    const token = await this.auth.createCustomToken(uid, {
-      type: 'station.subscriber',
-    })
-
-    const batch = this.firestore.batch()
-
-    channels.forEach((channel) => {
-      batch.set(
-        this.firestore.collection(this.collection).doc(channel),
-        {
-          subscribers: admin.firestore.FieldValue.arrayUnion(uid),
-        },
-        { merge: true },
-      )
-    })
-
-    await batch.commit()
-
-    return token
-  }
-
   async send(
     message: MessageShape<unknown>,
     channels: string[],
@@ -72,5 +50,27 @@ export default class Firestore
     })
 
     await batch.commit()
+  }
+
+  async grant(uid: string, channels: string[]): Promise<string> {
+    const token = await this.auth.createCustomToken(uid, {
+      type: 'station.subscriber',
+    })
+
+    const batch = this.firestore.batch()
+
+    channels.forEach((channel) => {
+      batch.set(
+        this.firestore.collection(this.collection).doc(channel),
+        {
+          subscribers: admin.firestore.FieldValue.arrayUnion(uid),
+        },
+        { merge: true },
+      )
+    })
+
+    await batch.commit()
+
+    return token
   }
 }

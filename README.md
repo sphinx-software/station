@@ -94,7 +94,7 @@ That's it! You've sent a greeting message to the `world-channel`.
 
 ### Using `Subscriber` & `Topic`
 
-In real world application, we usually cooperate an entity with channels.
+In real world application, we usually cooperate an entity with a channel.
 
 For example:
 
@@ -141,7 +141,7 @@ messenger.send(
 
 ### 💡 Tips
 
-You can also model your message by implementing the `MessageShape` interface.
+We can also model our message by implementing the `MessageShape` interface.
 
 ```ts
 class FriendRequest
@@ -159,41 +159,58 @@ class FriendRequest
 }
 ```
 
+Then send the message as usual
+
 ```ts
 //
 
 messenger.send(new FriendRequest(joe, jane))
 ```
 
-### Broadcasting messages to topic
+### Messaging via topics
 
-First let's create a topic:
+Another messaging mechanism is broadcasting messages via topics.
+Subscribers subscribing to the topic can receive the messages.
+
+We can send a message to a topic using `broadcast` method:
+
+```ts
+messenger.broadcast(
+  {
+    type: 'highscore.new',
+    payload: {
+      score: 999,
+    },
+  },
+  'highscore',
+)
+```
+
+We can also implement `Topic` interface for a topic model:
 
 ```ts
 import { Topic } from '@sphinx-software/station'
 
-class AwesomeTopic implements Topic {
-  channel() {
-    return 'topic-awesome'
+// A post that can also become a topic.
+// So subscribers can listen for new comment for this post.
+class Post implements Topic {
+  topicName() {
+    return `post-${this.id}`
   }
 }
-```
 
-Then we can broadcast a message to the `AwesomeTopic`:
-
-```ts
-// ... somewhere in your server-side code
-const topic = new AwesomeTopic()
-
-// ... you can broadcast a message
-const greetingMessage = {
-  type: 'greetings',
-  payload: {
-    hello: 'world',
+// When a new comment was made for this post
+// we can broadcast the message to the post topic
+// so subscribers can get updated
+messenger.broadcast(
+  {
+    type: 'comment.added',
+    payload: {
+      commentId: comment.id,
+    },
   },
-}
-
-await messenger.broadcast(greetingMessage, topic)
+  post,
+)
 ```
 
 ## Push Notification
