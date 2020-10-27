@@ -128,12 +128,15 @@ Now we can send a message to the user:
 const joe = new User()
 
 ///
-messenger.send({
-  type: 'greeting',
-  payload: {
-    content: 'Hello',
+messenger.send(
+  {
+    type: 'greeting',
+    payload: {
+      content: 'Hello',
+    },
   },
-})
+  joe,
+)
 ```
 
 ### 💡 Tips
