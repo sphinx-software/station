@@ -17,14 +17,6 @@ export interface Subscriber {
 }
 
 /**
- * A topic can broadcast messages through its channel
- *
- */
-export interface Topic {
-  channel(): string | string[]
-}
-
-/**
  * The message transport layer
  */
 export interface Transport {

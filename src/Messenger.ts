@@ -1,9 +1,5 @@
-import {
-  Transport,
-  MessageShape,
-  Subscriber,
-  Topic,
-} from './MessagingContracts'
+import { Transport, MessageShape, Subscriber } from './MessagingContracts'
+import { Topic } from './Topic'
 
 export default class Messenger {
   constructor(private readonly transport: Transport) {}
@@ -25,11 +21,8 @@ export default class Messenger {
    * Broadcasts a message to a topic
    *
    */
-  broadcast(message: MessageShape<unknown>, topic: Topic) {
-    const channels = topic.channel()
-    return this.transport.send(
-      message,
-      channels instanceof Array ? channels : [channels],
-    )
+  broadcast(message: MessageShape<unknown>, topic: Topic | string) {
+    const channels = 'string' === typeof topic ? topic : topic.topicName()
+    return this.transport.send(message, [channels])
   }
 }

@@ -1,50 +1,87 @@
-import * as admin from 'firebase-admin'
-import { MessageShape, Subscriber } from './MessagingContracts'
-
-// Package contracts
-
+/**
+ * Represents an audience (who will receive the notification)
+ */
 export interface Audience {
+  /**
+   * Get list of the devices that current Audience is having
+   *
+   */
   devices(): string[]
 }
 
-type Content = {
-  title: string
-  body: string
-  imageUrl?: string
-}
-
+/**
+ * Represent a notification
+ *
+ */
 export interface Notification {
+  /**
+   * Specify the pusher will be used to send this notification
+   */
   via?: string | string[]
-  content(): Content
-  audience(): Audience
-  data(): Record<string, string>
+
+  /**
+   * The unique id of the notification
+   *
+   */
+  uid(): string
+
+  /**
+   * The notification content
+   *
+   */
+  content(): {
+    title: string
+    body: string
+    imageUrl?: string
+  }
 }
 
-export interface Store {
-  save(notification: Notification[]): Promise<void>
-}
-
+/**
+ * Represent a Notification Pusher.
+ * Which can send a notification.
+ *
+ */
 export interface Pusher {
-  push(notification: Notification): Promise<void>
-  bulk(notifications: Notification[]): Promise<void>
+  /**
+   * Send notification to an audience
+   * and / or audience's device
+   *
+   */
+  send(notification: Notification, devices: string[]): Promise<void>
 }
 
-// Pusher specific contracts
+/**
+ * Extended pusher with subscription ability
+ *
+ */
+export interface SupportsSubscriptions {
+  /**
+   * Broadcast a notification to a topic
+   *
+   */
+  broadcast(notification: Notification, topic: string): Promise<void>
 
-type FCMOptions = {
-  data?: { [key: string]: string }
-  notification?: admin.messaging.Notification
-  android?: admin.messaging.AndroidConfig
-  webpush?: admin.messaging.WebpushConfig
-  apns?: admin.messaging.ApnsConfig
-  fcmOptions?: admin.messaging.FcmOptions
+  /**
+   * Subscribe devices to a topic
+   *
+   */
+  subscribe(devices: string[], topic: string): Promise<void>
+
+  /**
+   * Unsubscribe devices from a topic
+   *
+   */
+  unsubscribe(devices: string[], topic: string): Promise<void>
 }
 
-export interface ViaFCM {
-  fcmOptions(): FCMOptions
-}
-
-export interface ViaBroadcast {
-  subscriber(): Subscriber
-  message<Payload>(): MessageShape<Payload>
+/**
+ * Represent a Notification store
+ *
+ */
+export interface Store {
+  /**
+   * Save a notification into store
+   *
+   */
+  save(notification: Notification, target: string[]): Promise<Notification>
 }

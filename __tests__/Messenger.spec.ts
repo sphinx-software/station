@@ -1,6 +1,5 @@
-import { Messenger, Subscriber, Transport } from '../src'
+import { Messenger, Subscriber, Transport, Topic } from '../src'
 import Mock = jest.Mock
-import { Topic } from '../src/MessagingContracts'
 
 describe('Messenger', () => {
   const MockTransport = jest.fn<Transport, []>(() => ({
@@ -13,10 +12,11 @@ describe('Messenger', () => {
   }))
 
   const Topic = jest.fn<Topic, []>(() => ({
-    channel: jest.fn(),
+    topicName: jest.fn(),
   }))
 
   const transport = new MockTransport()
+
   const messenger = new Messenger(transport)
 
   beforeEach(() => {
@@ -60,7 +60,7 @@ describe('Messenger', () => {
 
   it('.broadcast() message to topic', async () => {
     const message = {
-      type: 'test-topic',
+      type: 'test-message',
       payload: {
         foo: 'bar',
       },
@@ -68,16 +68,12 @@ describe('Messenger', () => {
 
     const topic = new Topic()
 
-    ;(topic.channel as Mock).mockReturnValue([
-      'test-topic-channel-1',
-      'test-topic-channel-2',
-    ])
+    ;(topic.topicName as Mock).mockReturnValue('test-topic-channel-1')
 
     await messenger.broadcast(message, topic)
 
     expect(transport.send).toHaveBeenCalledWith(message, [
       'test-topic-channel-1',
-      'test-topic-channel-2',
     ])
   })
 })
