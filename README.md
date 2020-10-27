@@ -92,7 +92,7 @@ That's it! You've sent a greeting message to the `world-channel`.
 
 💡 The `send()` method is returning a `Promise<void>` value
 
-### Send a message to a subscriber
+### Sending a message to a subscriber
 
 In real world application, we usually cooperate an entity with a channel.
 
