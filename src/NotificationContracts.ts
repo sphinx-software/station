@@ -38,7 +38,7 @@ export interface Notification {
 
 /**
  * Represent a Notification Pusher.
- * Which can send the notifications
+ * Which can send a notification.
  *
  */
 export interface Pusher {
