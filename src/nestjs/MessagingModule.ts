@@ -4,7 +4,7 @@ import { Provider } from '@nestjs/common'
 import { Transport } from '../MessagingContracts'
 import * as transports from '../Transports'
 
-type BroadcastConfig = {
+type MessengerConfig = {
   // The transport that will be used
   using: string | Transport
 
@@ -26,7 +26,23 @@ type SupportedTransports = {
 }
 
 export default class MessagingModule {
-  static register(config: BroadcastConfig) {
+  static supportedTransports: SupportedTransports = {
+    firestore: {
+      factory: ({ firebase }: { firebase: admin.app.App }) => () =>
+        transports.firestore(firebase),
+      inject: [],
+    },
+    log: {
+      factory: ({ logger }) => () => transports.log(logger),
+      inject: [],
+    },
+    inline: {
+      factory: ({ callback }) => () => transports.inline(callback),
+      inject: [],
+    },
+  }
+
+  static register(config: MessengerConfig) {
     const provider: Provider<Messenger> =
       'string' === typeof config.using
         ? this.provideByFactory(config)
@@ -44,9 +60,9 @@ export default class MessagingModule {
   }
 
   private static provideByFactory(
-    config: BroadcastConfig,
+    config: MessengerConfig,
   ): Provider<Messenger> {
-    const transportFactory = this.supportedTransports()[config.using as string]
+    const transportFactory = this.supportedTransports[config.using as string]
 
     if (!transportFactory) {
       throw new Error(`Transport ${config.using} is not supported.`)
@@ -65,21 +81,11 @@ export default class MessagingModule {
     }
   }
 
-  protected static supportedTransports(): SupportedTransports {
-    return {
-      firestore: {
-        factory: ({ firebase }: { firebase: admin.app.App }) => () =>
-          transports.firestore(firebase),
-        inject: [],
-      },
-      log: {
-        factory: ({ logger }) => () => transports.log(logger),
-        inject: [],
-      },
-      inline: {
-        factory: ({ callback }) => () => transports.inline(callback),
-        inject: [],
-      },
-    }
+  public static support<TransportOption, ReturnedTransport extends Transport>(
+    transportName: string,
+    factory: TransportFactory<TransportOption, ReturnedTransport>,
+  ) {
+    this.supportedTransports[transportName] = factory
+    return this
   }
 }
