@@ -55,7 +55,7 @@ staying on top of well-known messaging services like Firebase, PubNub, Redis, ..
 
 ## Realtime Messaging
 
-## Minimal example
+### Minimal example
 
 We support realtime messaging via `Messenger` service.
 
@@ -92,7 +92,7 @@ That's it! You've sent a greeting message to the `world-channel`.
 
 💡 The `send()` method is returning a `Promise<void>` value
 
-## Using `Subscriber` & `Topic`
+### Using `Subscriber` & `Topic`
 
 In real world application, we usually cooperate an entity with a channel.
 
@@ -139,7 +139,7 @@ messenger.send(
 )
 ```
 
-### 💡 Tips
+#### 💡 Tips
 
 We can also model our message by implementing the `MessageShape` interface.
 
@@ -167,7 +167,7 @@ Then send the message as usual
 messenger.send(new FriendRequest(joe, jane))
 ```
 
-## Messaging via topics
+### Messaging via topics
 
 Another messaging mechanism is broadcasting messages via topics.
 Subscribers subscribing to the topic can receive the messages.
