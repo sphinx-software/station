@@ -1,5 +1,6 @@
 import { Transport, MessageShape, Subscriber } from './MessagingContracts'
 import { Topic } from './Topic'
+import { resolveSubscriberChannels } from './utils'
 
 export default class Messenger {
   constructor(private readonly transport: Transport) {}
@@ -8,13 +9,11 @@ export default class Messenger {
    * Sends a message to the subscriber
    *
    */
-  send(message: MessageShape<unknown>, subscriber: Subscriber | Subscriber[]) {
-    const channels =
-      subscriber instanceof Array
-        ? subscriber.map((subscriber) => subscriber.inbound())
-        : [subscriber.inbound()]
-
-    return this.transport.send(message, channels)
+  send(
+    message: MessageShape<unknown>,
+    subscriber: Subscriber | Subscriber[] | string | string[],
+  ) {
+    return this.transport.send(message, resolveSubscriberChannels(subscriber))
   }
 
   /**

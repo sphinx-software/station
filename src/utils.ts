@@ -4,6 +4,7 @@ import {
   SupportsSubscriptions,
 } from './NotificationContracts'
 import { Topic } from './Topic'
+import { Subscriber } from './MessagingContracts'
 
 export function resolveDevices(
   audience: Audience | string | string[],
@@ -21,6 +22,16 @@ export function resolveDevices(
 
 export function resolveTopic(topic: Topic | string) {
   return 'string' === typeof topic ? topic : topic.topicName()
+}
+
+export function resolveSubscriberChannels(
+  subscriber: Subscriber | Subscriber[] | string | string[],
+) {
+  const subscribers = subscriber instanceof Array ? subscriber : [subscriber]
+
+  return subscribers.map((sub) =>
+    'string' === typeof sub ? sub : sub.inbound(),
+  )
 }
 
 export function supportingSubscriptions(
