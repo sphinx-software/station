@@ -53,87 +53,113 @@ For client-side implementation, please check `@sphinx-software/antenna`_
 💡 Station is an abstraction layer for realtime messaging,
 staying on top of well-known messaging services like Firebase, PubNub, Redis, ...
 
-Let's use Firebase `firebase-admin` in our examples. We'll learn about other [supported services](#supported-services) later.
-
-`yarn`
-
-```shell script
-yarn add firebase-admin
-```
-
-`npm`
-
-```shell script
-npm i -S firebase-admin
-```
-
-Initialize firebase admin application
-
-```ts
-import * as admin from 'firebase-admin'
-
-// Initialize your firebase admin application
-const firebase = admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
-})
-```
-
-Now, you can
-
-check [Realtime Messaging](#realtime-messaging) section for enabling realtime features in your app
-
-or
-
-check [Push Notification](#push-notification) section for sending notifications to your user's devices & browsers.
-
 ## Realtime Messaging
 
-We support realtime messaging via `Messenger` service.
-Let's create one using `firestore` as our transport layer.
+### Minimal example
 
-💡 [Learn more about Firebase's Could Firestore](https://firebase.google.com/docs/firestore)
+We support realtime messaging via `Messenger` service.
 
 ```ts
 import { Messenger, transports } from '@sphinx-software/station'
 
-// ...
+const messenger = new Messenger(transports.log(console))
 
-const messenger = new Messenger(transports.firestore(firebase))
-```
-
-Your `messenger` is ready 🚀
-
-### Sending messages to subscribers
-
-Define your subscriber by implementing the `Subscriber` interface
-
-```ts
-import { Subscriber } from '@sphinx-software/station'
-
-class AwesomeSubscriber implements Subscriber {
-  uid() {
-    return 'awesome'
-  }
-
-  inbound() {
-    return `subscriber-${this.uid()}`
-  }
-}
-```
-
-Now, we can send the message to that subscriber by using `messenger.send()` method
-
-```ts
-// ... somewhere in your server-side code
-const message = {
-  type: 'Greetings',
-  payload: {
-    hello: 'world',
+messenger.send(
+  {
+    type: 'greeting',
+    payload: {
+      hello: 'world',
+    },
   },
-}
+  'the-world',
+)
+```
 
-// ... you can send a message to the subscriber
-await messenger.send(message, new AwesomeSubscriber())
+Run the above script, you should see the bellow output in your console
+
+```js
+{
+  message: { type: 'greeting', payload: { hello: 'world' } },
+  channels: [ 'world-channel' ]
+} Messenger.Transport.Log#send
+```
+
+That's it! You've sent a greeting message to the `world-channel`.
+
+💡 A message must have 2 fields:
+`type` accepts a string describing the message type and
+`payload` which is data the message carrying
+
+💡 The `send()` method is returning a `Promise<void>` value
+
+### Using `Subscriber` & `Topic`
+
+In real world application, we usually cooperate an entity with channels.
+
+For example:
+
+```ts
+class User {
+  // ... your code here
+}
+```
+
+We can instruct the messenger that `User` is a `Subscriber`, which can receive a message
+
+```ts
+class User implements Subscriber {
+  uid(): string {
+    return this.id.toString()
+  }
+
+  inbound(): string {
+    return `users-${this.uid()}`
+  }
+}
+```
+
+💡 Each subscriber can have unique identity specified in `uid()` method,
+and one inbound channel specified in `inbound()` method.
+
+Now we can send a message to the user:
+
+```ts
+/// Your code to get the user entity
+const joe = new User()
+
+///
+messenger.send({
+  type: 'greeting',
+  payload: {
+    content: 'Hello',
+  },
+})
+```
+
+### 💡 Tips
+
+You can also model your message by implementing the `MessageShape` interface.
+
+```ts
+class FriendRequest
+  implements MessageShape<{ senderId: number; receiverId: number }> {
+  type: string = 'FriendRequest'
+
+  get payload() {
+    return {
+      senderId: this.sender.id,
+      receiverId: this.receiver.id,
+    }
+  }
+
+  constructor(private sender: User, private receiver: User) {}
+}
+```
+
+```ts
+//
+
+messenger.send(new FriendRequest(joe, jane))
 ```
 
 ### Broadcasting messages to topic
@@ -169,13 +195,23 @@ await messenger.broadcast(greetingMessage, topic)
 
 ## Push Notification
 
+todo docs
+
 # Advance topics
+
+todo docs
 
 ## How it works
 
+todo docs
+
 ## Supported services
 
+todo docs
+
 ## Framework integrations
+
+todo docs
 
 ### express
 
