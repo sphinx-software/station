@@ -9,6 +9,7 @@ import {
   SupportsSubscriptions,
 } from './NotificationContracts'
 import { ViaFCM } from './PusherSpecificContracts'
+import Notifier from './Notifier'
 import * as nestjs from './nestjs'
 import * as transports from './Transports'
 import * as pushers from './Pushers'
@@ -21,13 +22,14 @@ export {
   MessageShape,
   Transport,
   Messenger,
-  // Notifer related
+  // Notifier related
   Audience,
   Notification,
   Pusher,
   Store,
   SupportsSubscriptions,
   ViaFCM,
+  Notifier,
   // Sub namespaces
   nestjs,
   transports,
