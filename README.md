@@ -77,11 +77,11 @@ Run the above script, you should see the bellow output in your console
 ```js
 {
   message: { type: 'greeting', payload: { hello: 'world' } },
-  channels: [ 'world-channel' ]
+  channels: [ 'the-world' ]
 } Messenger.Transport.Log#send
 ```
 
-That's it! You've sent a greeting message to the `world-channel`.
+That's it! You've sent a greeting message to `the-world`.
 
 > 💡
 >
