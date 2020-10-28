@@ -46,9 +46,9 @@ describe('Firestore transport', () => {
     await cleanUpFireStore(collection)
   })
 
-  afterAll(async () => {
-    await cleanUpFireStore(collection)
-  })
+  // afterAll(async () => {
+  //   await cleanUpFireStore(collection)
+  // })
 
   test('#send Should persist data correctly on multiple channels', async () => {
     const message = {

@@ -1,4 +1,4 @@
-import { Subscriber, MessageShape, Transport } from './MessagingContracts'
+import { Subscriber, Message, Transport } from './MessagingContracts'
 import { Topic } from './Topic'
 import Messenger from './Messenger'
 import {
@@ -19,7 +19,7 @@ export {
   Topic,
   // Messenger related
   Subscriber,
-  MessageShape,
+  Message,
   Transport,
   Messenger,
   // Notifier related

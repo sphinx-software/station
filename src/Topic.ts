@@ -2,6 +2,8 @@
  * A topic
  *
  */
+import { PrivateTopicName, TopicName } from './names'
+
 export interface Topic {
-  topicName(): string
+  name(): TopicName | PrivateTopicName
 }

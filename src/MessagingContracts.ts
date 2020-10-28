@@ -1,19 +1,19 @@
+import { SubscriberName } from './names'
+
 /**
  * The shape of the message
  */
-export declare type MessageShape<PayloadShape> = {
+export declare type Message<PayloadShape> = {
   type: string
   payload: PayloadShape
 }
 
 /**
- * A subscriber can be recognized by its identifier
- * and can receive messages through its inbound channel
+ * The subscriber (which can receive message)
  *
  */
 export interface Subscriber {
-  uid(): string
-  inbound(): string
+  name(): SubscriberName
 }
 
 /**
@@ -24,7 +24,7 @@ export interface Transport {
    * Sends a message through channels
    *
    */
-  send(message: MessageShape<unknown>, channels: string[]): Promise<void>
+  send(message: Message<unknown>, channels: string[]): Promise<void>
 }
 
 /**
@@ -37,12 +37,12 @@ export interface HasPrivateChannels<GrantEntity> {
    * for listening on the private channels
    *
    */
-  grant(uid: string, channels: string[]): Promise<GrantEntity>
+  grant(subscriber: string, channels: string[]): Promise<GrantEntity>
 
   /**
    * Revoke the listening permissions
    * on the given channels
    *
    */
-  revoke(uid: string, channels: string[]): Promise<void>
+  revoke(subscriber: string, channels: string[]): Promise<void>
 }
