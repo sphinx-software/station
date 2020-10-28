@@ -30,8 +30,6 @@ For client-side implementation, please check `@sphinx-software/antenna`_
 
 - [Getting Started](#getting-started)
   - [Realtime Messaging](#realtime-messaging)
-    - [Sending messages to subscribers](#sending-messages-to-subscribers)
-    - [Broadcasting messages to topic](#broadcasting-messages-to-topic)
   - [Push Notification](#push-notification)
 - [Advance topics](#advance-topics)
   - [How it works](#how-it-works)
@@ -50,8 +48,7 @@ For client-side implementation, please check `@sphinx-software/antenna`_
 
 # Getting Started
 
-💡 Station is an abstraction layer for realtime messaging,
-staying on top of well-known messaging services like Firebase, PubNub, Redis, ...
+💡 Station is an abstract layer for realtime messaging, staying on top of well-known Firebase services.
 
 ## Realtime Messaging
 
@@ -86,11 +83,18 @@ Run the above script, you should see the bellow output in your console
 
 That's it! You've sent a greeting message to the `world-channel`.
 
-💡 A message must have 2 fields:
-`type` accepts a string describing the message type and
-`payload` which is data the message carrying
-
-💡 The `send()` method is returning a `Promise<void>` value
+> 💡
+>
+> A message must have 2 fields:
+> `type` accepts a string describing the message type and
+> `payload` which is data the message carrying
+>
+> The `send()` method is returning a `Promise<void>` value
+>
+> The example above is using the log transport.
+> It will do nothing but log the message to the console output,
+> which will be come handy for testing / debugging.
+> For the real world application, [please check the `firestore` transport](#using-firestore-transport).
 
 ### Sending a message to a subscriber
 
@@ -118,8 +122,10 @@ class User implements Subscriber {
 }
 ```
 
-💡 Each subscriber can have unique identity specified in `uid()` method,
-and one inbound channel specified in `inbound()` method.
+> 💡
+>
+> Each subscriber can have unique identity specified in `uid()` method,
+> and one inbound channel specified in `inbound()` method.
 
 Now we can send a message to the user:
 
@@ -139,23 +145,23 @@ messenger.send(
 )
 ```
 
-#### 💡 Tips
+### `MessagShape` interface
 
 We can also model our message by implementing the `MessageShape` interface.
 
 ```ts
-class FriendRequest
-  implements MessageShape<{ senderId: number; receiverId: number }> {
-  type: string = 'FriendRequest'
+class FriendRequest implements MessageShape<{ sender: User }> {
+  get type() {
+    return 'FriendRequest'
+  }
 
   get payload() {
     return {
-      senderId: this.sender.id,
-      receiverId: this.receiver.id,
+      sender: this.sender,
     }
   }
 
-  constructor(private sender: User, private receiver: User) {}
+  constructor(private sender: User) {}
 }
 ```
 
@@ -164,7 +170,7 @@ Then send the message as usual
 ```ts
 //
 
-messenger.send(new FriendRequest(joe, jane))
+messenger.send(new FriendRequest(joe), jane)
 ```
 
 ### Messaging via topics
@@ -212,6 +218,15 @@ messenger.broadcast(
   post,
 )
 ```
+
+### Using `firestore` transport
+
+Instead of using `log` transport, we can use the `firestore` transport to enable
+realtime messaging and private channel functionalities
+
+### Private channels
+
+If you are using `firestore` transport
 
 ## Push Notification
 
