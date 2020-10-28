@@ -108,24 +108,29 @@ class User {
 }
 ```
 
-We can instruct the messenger that `User` is a `Subscriber`, which can receive a message
+We can instruct the messenger that `User` is a `Subscriber`, that can receive a message
 
 ```ts
-class User implements Subscriber {
-  uid(): string {
-    return this.id.toString()
-  }
+import { Subscriber, SubscriberName } from '@sphinx-software/station'
 
-  inbound(): string {
-    return `users-${this.uid()}`
+//
+
+class User implements Subscriber {
+  name(): string {
+    return new SubscriberName(`user-${this.id}`)
   }
 }
 ```
 
 > 💡
 >
-> Each subscriber can have unique identity specified in `uid()` method,
-> and one inbound channel specified in `inbound()` method.
+> The subscriber name MUST be unique.
+>
+> We use the `name()` method to identify the subscriber,
+> combining the `{type}-{id}` as the name will help you avoid name collision.
+>
+> The `SubscriberName` is just a helper for generating
+> the fully qualified name string with the format: `subscriber-{your subscriber name}`.
 
 Now we can send a message to the user:
 
@@ -145,12 +150,16 @@ messenger.send(
 )
 ```
 
-### `MessagShape` interface
+### The `Message` interface
 
-We can also model our message by implementing the `MessageShape` interface.
+We also can model our message by implementing the `Message` interface.
 
 ```ts
-class FriendRequest implements MessageShape<{ sender: User }> {
+import { Message } from '@sphinx-software/station'
+
+//
+
+class FriendRequest implements Message<{ sender: User }> {
   get type() {
     return 'FriendRequest'
   }
@@ -161,7 +170,7 @@ class FriendRequest implements MessageShape<{ sender: User }> {
     }
   }
 
-  constructor(private sender: User) {}
+  constructor(private readonly sender: User) {}
 }
 ```
 
@@ -176,7 +185,7 @@ messenger.send(new FriendRequest(joe), jane)
 ### Messaging via topics
 
 Another messaging mechanism is broadcasting messages via topics.
-Subscribers subscribing to the topic can receive the messages.
+Subscribers subscribing to a topic can receive the messages from it.
 
 We can send a message to a topic using `broadcast` method:
 
@@ -192,16 +201,16 @@ messenger.broadcast(
 )
 ```
 
-We can also implement `Topic` interface for a topic model:
+Similar to `Subscriber`, implementing `Topic` interface is also available:
 
 ```ts
-import { Topic } from '@sphinx-software/station'
+import { Topic, TopicName } from '@sphinx-software/station'
 
-// A post that can also become a topic.
+// A post now is a topic.
 // So subscribers can listen for new comment for this post.
 class Post implements Topic {
-  topicName() {
-    return `post-${this.id}`
+  name() {
+    return new TopicName(`post-${this.id}`)
   }
 }
 
