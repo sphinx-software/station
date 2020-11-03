@@ -269,12 +269,6 @@ const messenger = new Messenger(transports.firestore(app))
 > Please refer to the [Firebase Documentation](https://firebase.google.com/docs/admin/setup#initialize-sdk) for
 > more details about how to initialize `firebase-admin`
 
-With the `firestore` transport, we can start working with private topics and client implementations.
-
-### Private topics
-
-With `firestore` transport, we can authorize the client by giving
-
 ## Push Notification
 
 todo docs
@@ -310,7 +304,3 @@ todo docs
 # Best practices
 
 ## Understanding `Message` & `Notification`
-
-## Managing the subscriptions
-
-## Managing audience devices
