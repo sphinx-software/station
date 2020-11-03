@@ -108,7 +108,7 @@ class User {
 }
 ```
 
-We can instruct the messenger that `User` is a `Subscriber`, that can receive a message
+We can instruct the messenger that `User` is a `Subscriber`, that can receive a message via an inbound channel.
 
 ```ts
 import { Subscriber, SubscriberName } from '@sphinx-software/station'
@@ -116,7 +116,7 @@ import { Subscriber, SubscriberName } from '@sphinx-software/station'
 //
 
 class User implements Subscriber {
-  name(): string {
+  inbound(): string {
     return new SubscriberName(`user-${this.id}`)
   }
 }
@@ -124,7 +124,7 @@ class User implements Subscriber {
 
 > 💡
 >
-> The subscriber name MUST be unique.
+> The subscriber's inbound channel **MUST** be unique.
 >
 > We use the `name()` method to identify the subscriber,
 > combining the `{type}-{id}` as the name will help you avoid name collision.

@@ -1,4 +1,4 @@
-import { Channel } from './names'
+import { Channel } from './channels'
 
 /**
  * The shape of the message

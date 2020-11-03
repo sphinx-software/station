@@ -1,7 +1,7 @@
 import Log from '../../src/Transports/Log'
 
 describe('Log transport', () => {
-  it('logs the message', () => {
+  it('.send() should logs the message', () => {
     const mockConsole = jest.spyOn(console, 'log')
     const log = new Log(console)
     const message = {

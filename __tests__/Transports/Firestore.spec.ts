@@ -50,7 +50,7 @@ describe('Firestore transport', () => {
     await cleanUpFireStore(collection)
   })
 
-  test('#send Should persist data correctly on multiple channels', async () => {
+  test('.send() should persist data correctly on multiple channels', async () => {
     const message = {
       type: 'test-topic',
       payload: {
@@ -72,7 +72,7 @@ describe('Firestore transport', () => {
     expect(channel2.data()?.message).toEqual(message)
   })
 
-  test('#authorize should returning correct custom jwt', async () => {
+  test('.authorize() should returning correct custom jwt', async () => {
     const token = await firestoreTransport.authorize('test-subscriber')
 
     expect((jwt.decode(token) as Record<any, any>).uid).toEqual(
@@ -83,7 +83,7 @@ describe('Firestore transport', () => {
     })
   })
 
-  test('#grant & #revoke should save / delete the list of subscriber uid in the channel.subscribers field correctly', async () => {
+  test('.grant() & .revoke() should save / delete the list of subscriber uid in the channel.subscribers field correctly', async () => {
     await firestoreTransport.grant('test-id-1', [
       'test-channel-1',
       'test-channel-2',

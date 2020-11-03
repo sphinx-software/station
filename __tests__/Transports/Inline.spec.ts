@@ -8,7 +8,7 @@ describe('Inline transport', () => {
     spy.mockClear()
   })
 
-  it('should trigger its callback', async () => {
+  it('.send() should trigger its callback', async () => {
     const message = {
       type: 'foo',
       payload: {
