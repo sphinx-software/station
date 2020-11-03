@@ -1,9 +1,9 @@
 /**
- * A topic
+ * A topic can dispatch messages to its subscribers via its channel
  *
  */
-import { PrivateTopicName, TopicName } from './names'
+import { MessageChannel } from './names'
 
 export interface Topic {
-  name(): TopicName | PrivateTopicName
+  channel(): MessageChannel
 }

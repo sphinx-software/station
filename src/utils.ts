@@ -21,7 +21,7 @@ export function resolveDevices(
 }
 
 export function resolveTopicChannel(topic: Topic | string) {
-  return 'string' === typeof topic ? topic : topic.name().fullyQualified()
+  return 'string' === typeof topic ? topic : topic.channel().fullyQualified()
 }
 
 export function resolveTopicChannels(
@@ -38,14 +38,14 @@ export function resolveSubscriberChannels(
   const subscribers = subscriber instanceof Array ? subscriber : [subscriber]
 
   return subscribers.map((sub) =>
-    'string' === typeof sub ? sub : sub.name().fullyQualified(),
+    'string' === typeof sub ? sub : sub.inbound().fullyQualified(),
   )
 }
 
 export function resolveSubscriberChannel(subscriber: Subscriber | string) {
   return 'string' === typeof subscriber
     ? subscriber
-    : subscriber.name().fullyQualified()
+    : subscriber.inbound().fullyQualified()
 }
 
 export function supportingSubscriptions(

@@ -1,6 +1,6 @@
 import { Subscriber, Message, Transport } from './MessagingContracts'
 import { Topic } from './Topic'
-import { Name, SubscriberName, TopicName, PrivateTopicName } from './names'
+import { MessageChannel, Channel, PrivateChannel } from './channels'
 import Messenger from './Messenger'
 import {
   Audience,
@@ -19,10 +19,9 @@ export {
   // Generic
   Topic,
   // Naming convention
-  Name,
-  SubscriberName,
-  TopicName,
-  PrivateTopicName,
+  MessageChannel,
+  Channel,
+  PrivateChannel,
   // Messenger related
   Subscriber,
   Message,

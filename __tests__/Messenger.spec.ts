@@ -1,6 +1,5 @@
-import { Messenger, Subscriber, Transport, Topic } from '../src'
+import { Messenger, Subscriber, Transport, Topic, Channel } from '../src'
 import Mock = jest.Mock
-import { SubscriberName, TopicName } from '../src/names'
 
 describe('Messenger', () => {
   const MockTransport = jest.fn<Transport, []>(() => ({
@@ -8,11 +7,11 @@ describe('Messenger', () => {
   }))
 
   const Subscriber = jest.fn<Subscriber, []>(() => ({
-    name: jest.fn(),
+    inbound: jest.fn(),
   }))
 
   const Topic = jest.fn<Topic, []>(() => ({
-    name: jest.fn(),
+    channel: jest.fn(),
   }))
 
   const transport = new MockTransport()
@@ -31,11 +30,11 @@ describe('Messenger', () => {
       },
     }
     const subscriber = new Subscriber()
-    ;(subscriber.name as Mock).mockReturnValue(new SubscriberName('sub-1'))
+    ;(subscriber.inbound as Mock).mockReturnValue(new Channel('sub-1'))
 
     await messenger.send(message, subscriber)
     expect(transport.send).toHaveBeenCalledWith(message, [
-      subscriber.name().fullyQualified(),
+      subscriber.inbound().fullyQualified(),
     ])
   })
 
@@ -47,15 +46,15 @@ describe('Messenger', () => {
       },
     }
     const subscriber1 = new Subscriber()
-    ;(subscriber1.name as Mock).mockReturnValue(new SubscriberName('sub-1'))
+    ;(subscriber1.inbound as Mock).mockReturnValue(new Channel('sub-1'))
 
     const subscriber2 = new Subscriber()
-    ;(subscriber2.name as Mock).mockReturnValue(new SubscriberName('sub-2'))
+    ;(subscriber2.inbound as Mock).mockReturnValue(new Channel('sub-2'))
 
     await messenger.send(message, [subscriber1, subscriber2])
     expect(transport.send).toHaveBeenCalledWith(message, [
-      subscriber1.name().fullyQualified(),
-      subscriber2.name().fullyQualified(),
+      subscriber1.inbound().fullyQualified(),
+      subscriber2.inbound().fullyQualified(),
     ])
   })
 
@@ -69,12 +68,12 @@ describe('Messenger', () => {
 
     const topic = new Topic()
 
-    ;(topic.name as Mock).mockReturnValue(new TopicName('topic-test'))
+    ;(topic.channel as Mock).mockReturnValue(new Channel('topic-test'))
 
     await messenger.broadcast(message, topic)
 
     expect(transport.send).toHaveBeenCalledWith(message, [
-      topic.name().fullyQualified(),
+      topic.channel().fullyQualified(),
     ])
   })
 })

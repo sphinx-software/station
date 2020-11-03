@@ -1,4 +1,4 @@
-import { SubscriberName } from './names'
+import { Channel } from './names'
 
 /**
  * The shape of the message
@@ -9,11 +9,11 @@ export declare type Message<PayloadShape> = {
 }
 
 /**
- * The subscriber (which can receive message)
+ * The subscriber (which can receive message) through its inbound channel
  *
  */
 export interface Subscriber {
-  name(): SubscriberName
+  inbound(): Channel
 }
 
 /**
