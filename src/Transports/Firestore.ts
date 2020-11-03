@@ -1,9 +1,11 @@
 import {
   Transport,
-  MessageShape,
+  Message,
   HasPrivateChannels,
+  Subscriber,
 } from '../MessagingContracts'
 import * as admin from 'firebase-admin'
+import { Topic } from '../Topic'
 
 /**
  * We'll utilize the Firebase firestore service for channel
@@ -17,10 +19,7 @@ export default class Firestore
     private readonly collection: string = 'channels',
   ) {}
 
-  async send(
-    message: MessageShape<unknown>,
-    channels: string[],
-  ): Promise<void> {
+  async send(message: Message<unknown>, channels: string[]): Promise<void> {
     const batch = this.firestore.batch()
 
     channels.forEach((channel) => {
@@ -36,14 +35,14 @@ export default class Firestore
     await batch.commit()
   }
 
-  public async revoke(uid: string, channels: string[]) {
+  public async revoke(subscriber: string, channels: string[]) {
     const batch = this.firestore.batch()
 
     channels.forEach((channel) => {
       batch.set(
         this.firestore.collection(this.collection).doc(channel),
         {
-          subscribers: admin.firestore.FieldValue.arrayRemove(uid),
+          subscribers: admin.firestore.FieldValue.arrayRemove(subscriber),
         },
         { merge: true },
       )
@@ -52,25 +51,25 @@ export default class Firestore
     await batch.commit()
   }
 
-  async grant(uid: string, channels: string[]): Promise<string> {
-    const token = await this.auth.createCustomToken(uid, {
-      type: 'station.subscriber',
-    })
-
+  async grant(subscriber: string, channels: string[]): Promise<void> {
     const batch = this.firestore.batch()
 
     channels.forEach((channel) => {
       batch.set(
         this.firestore.collection(this.collection).doc(channel),
         {
-          subscribers: admin.firestore.FieldValue.arrayUnion(uid),
+          subscribers: admin.firestore.FieldValue.arrayUnion(subscriber),
         },
         { merge: true },
       )
     })
 
     await batch.commit()
+  }
 
-    return token
+  public async authorize(subscriber: string): Promise<string> {
+    return await this.auth.createCustomToken(subscriber, {
+      type: 'station.subscriber',
+    })
   }
 }

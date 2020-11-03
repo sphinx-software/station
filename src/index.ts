@@ -1,5 +1,6 @@
-import { Subscriber, MessageShape, Transport } from './MessagingContracts'
+import { Subscriber, Message, Transport } from './MessagingContracts'
 import { Topic } from './Topic'
+import { Name, SubscriberName, TopicName, PrivateTopicName } from './names'
 import Messenger from './Messenger'
 import {
   Audience,
@@ -17,9 +18,14 @@ import * as pushers from './Pushers'
 export {
   // Generic
   Topic,
+  // Naming convention
+  Name,
+  SubscriberName,
+  TopicName,
+  PrivateTopicName,
   // Messenger related
   Subscriber,
-  MessageShape,
+  Message,
   Transport,
   Messenger,
   // Notifier related

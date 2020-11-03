@@ -6,7 +6,11 @@ import {
   SupportsSubscriptions,
 } from './NotificationContracts'
 import { Topic } from './Topic'
-import { resolveDevices, resolveTopic, supportingSubscriptions } from './utils'
+import {
+  resolveDevices,
+  resolveTopicChannel,
+  supportingSubscriptions,
+} from './utils'
 
 type PusherAdapter = Pusher | SupportsSubscriptions
 
@@ -59,7 +63,7 @@ export default class Notifier {
     notification: Notification,
     topic: Topic | string,
   ): Promise<void> {
-    const topicName = resolveTopic(topic)
+    const topicName = resolveTopicChannel(topic)
     await this.store.save(notification, [topicName])
     await Promise.all(
       this.resolvePushers(notification.via)

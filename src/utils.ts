@@ -4,7 +4,7 @@ import {
   SupportsSubscriptions,
 } from './NotificationContracts'
 import { Topic } from './Topic'
-import { Subscriber } from './MessagingContracts'
+import { HasPrivateChannels, Subscriber, Transport } from './MessagingContracts'
 
 export function resolveDevices(
   audience: Audience | string | string[],
@@ -20,8 +20,16 @@ export function resolveDevices(
   return audience.devices()
 }
 
-export function resolveTopic(topic: Topic | string) {
-  return 'string' === typeof topic ? topic : topic.topicName()
+export function resolveTopicChannel(topic: Topic | string) {
+  return 'string' === typeof topic ? topic : topic.name().fullyQualified()
+}
+
+export function resolveTopicChannels(
+  topic: Topic | Topic[] | string | string[],
+) {
+  const topics = topic instanceof Array ? topic : [topic]
+
+  return topics.map((topic) => resolveTopicChannel(topic))
 }
 
 export function resolveSubscriberChannels(
@@ -30,12 +38,24 @@ export function resolveSubscriberChannels(
   const subscribers = subscriber instanceof Array ? subscriber : [subscriber]
 
   return subscribers.map((sub) =>
-    'string' === typeof sub ? sub : sub.inbound(),
+    'string' === typeof sub ? sub : sub.name().fullyQualified(),
   )
+}
+
+export function resolveSubscriberChannel(subscriber: Subscriber | string) {
+  return 'string' === typeof subscriber
+    ? subscriber
+    : subscriber.name().fullyQualified()
 }
 
 export function supportingSubscriptions(
   pusher: Pusher | SupportsSubscriptions,
 ) {
   return 'function' === typeof (pusher as SupportsSubscriptions).broadcast
+}
+
+export function supportingPrivateChannels(
+  transport: Transport | HasPrivateChannels<unknown>,
+) {
+  return 'function' === typeof (transport as HasPrivateChannels<unknown>).grant
 }
