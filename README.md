@@ -81,7 +81,7 @@ Run the above script, you should see the bellow output in your console
 } Messenger.Transport.Log#send
 ```
 
-That's it! You've sent a greeting message to `the-world`.
+That's it! You've sent a greeting message to `the-world` channel.
 
 > 💡
 >
@@ -95,92 +95,6 @@ That's it! You've sent a greeting message to `the-world`.
 > It will do nothing but log the message to the console output,
 > which will become handy for testing / debugging.
 > For the real world application, [please check the `firestore` transport](#using-firestore-transport).
-
-### Sending a message to a subscriber
-
-In real world application, we usually cooperate an entity with a channel.
-
-For example:
-
-```ts
-class User {
-  // ... your code here
-}
-```
-
-We can instruct the messenger that `User` is a `Subscriber`, that can receive a message via an inbound channel.
-
-```ts
-import { Subscriber, SubscriberName } from '@sphinx-software/station'
-
-//
-
-class User implements Subscriber {
-  inbound(): string {
-    return new SubscriberName(`user-${this.id}`)
-  }
-}
-```
-
-> 💡
->
-> The subscriber's inbound channel **MUST** be unique.
->
-> We use the `name()` method to identify the subscriber,
-> combining the `{type}-{id}` as the name will help you avoid name collision.
->
-> The `SubscriberName` is just a helper for generating
-> the fully qualified name string with the format: `subscriber-{your subscriber name}`.
-
-Now we can send a message to the user:
-
-```ts
-/// Your code to get the user entity
-const joe = new User()
-
-///
-messenger.send(
-  {
-    type: 'greeting',
-    payload: {
-      content: 'Hello',
-    },
-  },
-  joe,
-)
-```
-
-### The `Message` interface
-
-We also can model our message by implementing the `Message` interface.
-
-```ts
-import { Message } from '@sphinx-software/station'
-
-//
-
-class FriendRequest implements Message<{ sender: User }> {
-  get type() {
-    return 'FriendRequest'
-  }
-
-  get payload() {
-    return {
-      sender: this.sender,
-    }
-  }
-
-  constructor(private readonly sender: User) {}
-}
-```
-
-Then send the message as usual
-
-```ts
-//
-
-messenger.send(new FriendRequest(joe), jane)
-```
 
 ### Messaging via topics
 
@@ -204,13 +118,13 @@ messenger.broadcast(
 Similar to `Subscriber`, implementing `Topic` interface is also available:
 
 ```ts
-import { Topic, TopicName } from '@sphinx-software/station'
+import { Topic, Channel } from '@sphinx-software/station'
 
 // A post now is a topic.
 // So subscribers can listen for new comment for this post.
 class Post implements Topic {
-  name() {
-    return new TopicName(`post-${this.id}`)
+  channel() {
+    return new Channel(`post-${this.id}`)
   }
 }
 
@@ -268,6 +182,91 @@ const messenger = new Messenger(transports.firestore(app))
 >
 > Please refer to the [Firebase Documentation](https://firebase.google.com/docs/admin/setup#initialize-sdk) for
 > more details about how to initialize `firebase-admin`
+
+### Sending a message to a subscriber
+
+In real world application, we usually cooperate an entity with a channel.
+
+For example:
+
+```ts
+class User {
+  // ... your code here
+}
+```
+
+We can instruct the messenger that `User` is a `Subscriber`, that can receive a message via an inbound channel.
+
+```ts
+import { Subscriber, PrivateChannel } from '@sphinx-software/station'
+
+//
+
+class User implements Subscriber {
+  inbound(): string {
+    return new PrivateChannel(`user-${this.id}`)
+  }
+}
+```
+
+> 💡
+>
+> The subscriber's inbound channel **MUST** be unique.
+> The `inbound()` method will be used for identifying the subscriber,
+> combining the `{type}-{id}` as the name will help you avoid name collision.
+>
+> The `PrivateChannel` class is just a helper for generating
+> the fully qualified name string with the format: `private_channel_{your_channel_name}`.
+
+Now we can send a message to the user:
+
+```ts
+/// Your code to get the user entity
+const joe = new User()
+
+///
+messenger.send(
+  {
+    type: 'greeting',
+    payload: {
+      content: 'Hello',
+    },
+  },
+  joe,
+)
+```
+
+### The `Message` interface
+
+We also can model our message by implementing the `Message` interface.
+
+```ts
+import { Message } from '@sphinx-software/station'
+
+//
+
+class FriendRequest implements Message<{ sender: User }> {
+  get type() {
+    return 'FriendRequest'
+  }
+
+  get payload() {
+    return {
+      sender: this.sender,
+    }
+  }
+
+  constructor(private readonly sender: User) {}
+}
+```
+
+Then send the message as usual
+
+```ts
+//
+
+messenger.send(new FriendRequest(joe), jane)
+```
 
 ## Push Notification
 
