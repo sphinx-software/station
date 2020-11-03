@@ -8,8 +8,6 @@ type MessengerConfig = {
   // The transport that will be used
   using: string | Transport
 
-  publicChannels: string[]
-
   // The configuration for each transports
   transports: Record<string, any>
 }
