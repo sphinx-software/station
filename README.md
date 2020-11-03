@@ -220,6 +220,8 @@ messenger.send(
 
 > 💡
 >
+> A `Subscriber` can subscribe to many `Topic`, but have one inbound channel.
+>
 > Certainly you can use `Channel` instead of `PrivateChannel` as an _inbound channel_.
 > But hey! if you are doing **everyone can subscribe to it!**. Not so private right?
 
