@@ -31,13 +31,19 @@ export interface Transport {
  * Indicates if the transport supports private channels
  *
  */
-export interface HasPrivateChannels<GrantEntity> {
+export interface HasPrivateChannels<AuthorizeEntity> {
+  /**
+   * Authorizing a subscriber
+   *
+   */
+  authorize(subscriber: string): Promise<AuthorizeEntity>
+
   /**
    * Grant the permissions to subscriber
    * for listening on the private channels
    *
    */
-  grant(subscriber: string, channels: string[]): Promise<GrantEntity>
+  grant(subscriber: string, channels: string[]): Promise<void>
 
   /**
    * Revoke the listening permissions

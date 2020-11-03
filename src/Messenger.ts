@@ -43,36 +43,49 @@ export default class Messenger {
     return (this.transport as Transport).send(message, channels)
   }
 
-  grant<GrantEntity>(
+  grant(
     subscriber: Subscriber | string,
     topics: Topic | Topic[] | string | string[],
   ) {
     if (!supportingPrivateChannels(this.transport)) {
-      return undefined
+      return
     }
     const topicChannels = resolveTopicChannels(topics)
     const subscriberChannel = resolveSubscriberChannel(subscriber)
 
-    return (this.transport as HasPrivateChannels<GrantEntity>).grant(
+    return (this.transport as HasPrivateChannels<unknown>).grant(
       subscriberChannel,
       topicChannels,
     )
   }
 
-  revoke<GrantEntity>(
+  revoke(
     subscriber: Subscriber | string,
     topics: Topic | Topic[] | string | string[],
   ) {
     if (!supportingPrivateChannels(this.transport)) {
-      return undefined
+      return
     }
 
     const topicChannels = resolveTopicChannels(topics)
     const subscriberChannel = resolveSubscriberChannel(subscriber)
 
-    return (this.transport as HasPrivateChannels<GrantEntity>).revoke(
+    return (this.transport as HasPrivateChannels<unknown>).revoke(
       subscriberChannel,
       topicChannels,
+    )
+  }
+
+  authorize(subscriber: Subscriber | string) {
+    if (!supportingPrivateChannels(this.transport)) {
+      throw new Error(
+        'Could not perform authorization:' +
+          ` Current transport [${this.transport.constructor.name}] does not support private channels.`,
+      )
+    }
+
+    return (this.transport as HasPrivateChannels<unknown>).authorize(
+      resolveSubscriberChannel(subscriber),
     )
   }
 }

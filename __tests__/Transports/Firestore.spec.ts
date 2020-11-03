@@ -46,9 +46,9 @@ describe('Firestore transport', () => {
     await cleanUpFireStore(collection)
   })
 
-  // afterAll(async () => {
-  //   await cleanUpFireStore(collection)
-  // })
+  afterAll(async () => {
+    await cleanUpFireStore(collection)
+  })
 
   test('#send Should persist data correctly on multiple channels', async () => {
     const message = {
@@ -72,15 +72,24 @@ describe('Firestore transport', () => {
     expect(channel2.data()?.message).toEqual(message)
   })
 
+  test('#authorize should returning correct custom jwt', async () => {
+    const token = await firestoreTransport.authorize('test-subscriber')
+
+    expect((jwt.decode(token) as Record<any, any>).uid).toEqual(
+      'test-subscriber',
+    )
+    expect((jwt.decode(token) as Record<any, any>).claims).toEqual({
+      type: 'station.subscriber',
+    })
+  })
+
   test('#grant & #revoke should save / delete the list of subscriber uid in the channel.subscribers field correctly', async () => {
-    const granted1 = await firestoreTransport.grant('test-id-1', [
+    await firestoreTransport.grant('test-id-1', [
       'test-channel-1',
       'test-channel-2',
     ])
 
-    const granted2 = await firestoreTransport.grant('test-id-2', [
-      'test-channel-1',
-    ])
+    await firestoreTransport.grant('test-id-2', ['test-channel-1'])
 
     const channel1 = await collection.doc('test-channel-1').get()
     const channel2 = await collection.doc('test-channel-2').get()
@@ -90,15 +99,6 @@ describe('Firestore transport', () => {
 
     expect(channel2.data()?.subscribers).toContain('test-id-1')
     expect(channel2.data()?.subscribers).not.toContain('test-id-2')
-
-    expect((jwt.decode(granted1) as any).uid).toEqual('test-id-1')
-    expect((jwt.decode(granted1) as any).claims.type).toEqual(
-      'station.subscriber',
-    )
-    expect((jwt.decode(granted2) as any).uid).toEqual('test-id-2')
-    expect((jwt.decode(granted2) as any).claims.type).toEqual(
-      'station.subscriber',
-    )
 
     // Re-fetch after deletion
     await firestoreTransport.revoke('test-id-1', [

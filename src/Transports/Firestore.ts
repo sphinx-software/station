@@ -51,11 +51,7 @@ export default class Firestore
     await batch.commit()
   }
 
-  async grant(subscriber: string, channels: string[]): Promise<string> {
-    const token = await this.auth.createCustomToken(subscriber, {
-      type: 'station.subscriber',
-    })
-
+  async grant(subscriber: string, channels: string[]): Promise<void> {
     const batch = this.firestore.batch()
 
     channels.forEach((channel) => {
@@ -69,7 +65,11 @@ export default class Firestore
     })
 
     await batch.commit()
+  }
 
-    return token
+  public async authorize(subscriber: string): Promise<string> {
+    return await this.auth.createCustomToken(subscriber, {
+      type: 'station.subscriber',
+    })
   }
 }
