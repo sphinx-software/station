@@ -19,8 +19,7 @@ describe('Firestore transport', () => {
     ),
   })
 
-  const collectionName =
-    'sphinx-stations-integration-test-channels' + new Date().getTime()
+  const collectionName = 'sphinx-stations-integration-test-channels'
 
   const firestoreTransport = new Firestore(
     app.firestore(),
@@ -52,7 +51,7 @@ describe('Firestore transport', () => {
 
   test('.send() should persist data correctly on multiple channels', async () => {
     const message = {
-      type: 'test-topic',
+      type: 'test-message',
       payload: {
         foo: 'bar',
       },
@@ -64,12 +63,26 @@ describe('Firestore transport', () => {
       'test-channel-3',
     ])
 
-    const channel1 = await collection.doc('test-channel-1').get()
+    const channel1Messages = await collection
+      .doc('test-channel-1')
+      .collection('messages')
+      .orderBy('_timestamp', 'desc')
+      .limit(1)
+      .get()
 
-    const channel2 = await collection.doc('test-channel-2').get()
+    const channel2Messages = await collection
+      .doc('test-channel-2')
+      .collection('messages')
+      .orderBy('_timestamp', 'desc')
+      .limit(1)
+      .get()
 
-    expect(channel1.data()?.message).toEqual(message)
-    expect(channel2.data()?.message).toEqual(message)
+    const channel1LastMessage = channel1Messages.docs[0].get('message')
+
+    const channel2LastMessage = channel2Messages.docs[0].get('message')
+
+    expect(channel1LastMessage).toEqual(message)
+    expect(channel2LastMessage).toEqual(message)
   })
 
   test('.authorize() should returning correct custom jwt', async () => {

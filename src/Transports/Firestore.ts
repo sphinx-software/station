@@ -23,13 +23,16 @@ export default class Firestore
     const batch = this.firestore.batch()
 
     channels.forEach((channel) => {
-      batch.set(
-        this.firestore.collection(this.collection).doc(channel),
-        {
-          message,
-        },
-        { merge: true },
+      const messageCollection = this.firestore.collection(
+        `${this.collection}/${channel}/messages`,
       )
+
+      const newDoc = messageCollection.doc()
+
+      batch.set(newDoc, {
+        message,
+        _timestamp: new Date().getTime(),
+      })
     })
 
     await batch.commit()
