@@ -30,7 +30,10 @@ export default class Firestore
       const newDoc = messageCollection.doc()
 
       batch.set(newDoc, {
-        message,
+        // Ensuring the message is a POJO
+        message: JSON.parse(
+          JSON.stringify({ type: message.type, payload: message.payload }),
+        ),
         _timestamp: new Date().getTime(),
       })
     })

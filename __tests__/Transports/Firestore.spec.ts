@@ -1,6 +1,7 @@
 import * as admin from 'firebase-admin'
 import * as jwt from 'jsonwebtoken'
 import Firestore from '../../src/Transports/Firestore'
+import { Message } from '../../src'
 
 /**
  *
@@ -83,6 +84,35 @@ describe('Firestore transport', () => {
 
     expect(channel1LastMessage).toEqual(message)
     expect(channel2LastMessage).toEqual(message)
+  })
+
+  test('.send() can serialize the message with custom prototype', async () => {
+    class CustomPrototypeMessage implements Message<{ foo: string }> {
+      public type = 'custom-prototype'
+      public get payload() {
+        return { foo: 'bar' }
+      }
+    }
+
+    await firestoreTransport.send(new CustomPrototypeMessage(), [
+      'test-channel',
+    ])
+
+    const channelMessages = await collection
+      .doc('test-channel')
+      .collection('messages')
+      .orderBy('_timestamp', 'desc')
+      .limit(1)
+      .get()
+
+    const justSentMessage = channelMessages.docs[0].get('message')
+
+    expect(justSentMessage).toEqual({
+      type: 'custom-prototype',
+      payload: {
+        foo: 'bar',
+      },
+    })
   })
 
   test('.authorize() should returning correct custom jwt', async () => {
