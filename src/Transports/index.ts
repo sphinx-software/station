@@ -3,8 +3,8 @@ import Firestore from './Firestore'
 import Log, { Logger } from './Log'
 import Inline, { InlineCallback } from './Inline'
 
-export const firestore = (firebase: admin.app.App) => {
-  return new Firestore(firebase.firestore(), firebase.auth())
+export const firestore = (firebase: admin.app.App, collection = 'channels') => {
+  return new Firestore(firebase.firestore(), firebase.auth(), collection)
 }
 
 export const log = (logger: Logger = console) => {

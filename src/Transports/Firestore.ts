@@ -10,7 +10,7 @@ export default class Firestore
   constructor(
     private readonly firestore: admin.firestore.Firestore,
     private readonly auth: admin.auth.Auth,
-    private readonly collection: string = 'channels',
+    private readonly collection: string,
   ) {}
 
   async send(message: Message<unknown>, channels: string[]): Promise<void> {
