@@ -1,11 +1,5 @@
-import {
-  Transport,
-  Message,
-  HasPrivateChannels,
-  Subscriber,
-} from '../MessagingContracts'
+import { Transport, Message, HasPrivateChannels } from '../MessagingContracts'
 import * as admin from 'firebase-admin'
-import { Topic } from '../Topic'
 
 /**
  * We'll utilize the Firebase firestore service for channel
