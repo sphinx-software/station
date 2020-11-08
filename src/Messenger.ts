@@ -76,15 +76,15 @@ export default class Messenger {
     )
   }
 
-  authorize(subscriber: Subscriber | string) {
+  handshake(subscriber: Subscriber | string) {
     if (!supportingPrivateChannels(this.transport)) {
       throw new Error(
-        'Could not perform authorization:' +
+        'Could not perform handshaking:' +
           ` Current transport [${this.transport.constructor.name}] does not support private channels.`,
       )
     }
 
-    return (this.transport as HasPrivateChannels<unknown>).authorize(
+    return (this.transport as HasPrivateChannels<unknown>).handshake(
       resolveSubscriberChannel(subscriber),
     )
   }
