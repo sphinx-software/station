@@ -115,8 +115,8 @@ describe('Firestore transport', () => {
     })
   })
 
-  test('.authorize() should returning correct custom jwt', async () => {
-    const token = await firestoreTransport.authorize('test-subscriber')
+  test('.handshake() should returning correct custom jwt', async () => {
+    const token = await firestoreTransport.handshake('test-subscriber')
 
     expect((jwt.decode(token) as Record<any, any>).uid).toEqual(
       'test-subscriber',

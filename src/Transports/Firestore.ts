@@ -67,7 +67,7 @@ export default class Firestore
     await batch.commit()
   }
 
-  public async authorize(subscriber: string): Promise<string> {
+  public async handshake(subscriber: string): Promise<string> {
     return await this.auth.createCustomToken(subscriber, {
       type: 'station.subscriber',
     })

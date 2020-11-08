@@ -36,7 +36,7 @@ export interface HasPrivateChannels<AuthorizeEntity> {
    * Authorizing a subscriber
    *
    */
-  authorize(subscriber: string): Promise<AuthorizeEntity>
+  handshake(subscriber: string): Promise<AuthorizeEntity>
 
   /**
    * Grant the permissions to subscriber
