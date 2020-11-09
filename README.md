@@ -9,7 +9,9 @@
 ![Issues](https://img.shields.io/github/issues-raw/sphinx-software/station)
 ![License](https://img.shields.io/github/license/sphinx-software/station)
 
-_Abstraction Layer for realtime messaging & push notification_
+**Abstraction Layer for realtime messaging & push notification**
+
+_Station is staying on top of well-known Firebase services._
 
 `yarn`
 
@@ -28,27 +30,14 @@ For client-side implementation, please check `@sphinx-software/antenna`_
 
 ## Contents
 
-- [Getting Started](#getting-started)
-  - [Realtime Messaging](#realtime-messaging)
-  - [Push Notification](#push-notification)
-- [Advance topics](#advance-topics)
-  - [How it works](#how-it-works)
-  - [Supported services](#supported-services)
-  - [Framework integration](#framework-integrations)
-    - [express](#express)
-    - [Koa](#koa)
-    - [NestJS](#nestjs)
-    - [TypeORM](#typeorm)
-  - [Extending messaging transporter](#extending-messaging-transporter)
-  - [Extending notification pusher](#extending-notification-pusher)
-- [Best practices](#best-practices)
-  - [Understanding `Message` & `Notification`](#understanding-message--notification)
-  - [Managing subscriptions](#managing-the-subscriptions)
-  - [Managing audience devices](#managing-audience-devices)
-
-# Getting Started
-
-💡 Station is an abstract layer for realtime messaging, staying on top of well-known Firebase services.
+- [Realtime Messaging](#realtime-messaging)
+  - [Minimal example](#minimal-example)
+  - [The Message interface](#the-message-interface)
+  - [The Topic interface](#the-topic-interface)
+  - [Using firestore transport](#using-firestore-transport)
+  - [Private topics](#private-topics)
+  - [Sending a message to a subscriber](#sending-a-message-to-a-subscriber)
+- [Push Notification](#push-notification)
 
 ## Realtime Messaging
 
@@ -167,9 +156,121 @@ messenger.broadcast(
 >
 > Combining the `{type}-{id}` as the name will help you avoid name collision.
 
-### Private topic
+### Using `firestore` transport
 
-todo docs
+Instead of using `log` transport, we can use the `firestore` transport which can
+send messages to the browsers / devices and authorize their subscriptions to private topics.
+
+First let's install `firebase-admin` library
+
+`yarn`
+
+```shell script
+yarn add firebase-admin
+```
+
+`npm`
+
+```shell script
+npm i -S firebase-admin
+```
+
+Now, let's initialize the firebase admin application:
+
+```ts
+import * as admin from 'firebase-admin'
+
+const app = admin.initializeApp({
+  credential: admin.credential.applicationDefault(),
+})
+```
+
+Then replace the `messenger` initialization script
+
+```ts
+// const messenger = new Messenger(transports.log(console))
+const messenger = new Messenger(transports.firestore(app))
+```
+
+> 💡
+>
+> Please refer to the [Firebase Documentation](https://firebase.google.com/docs/admin/setup#initialize-sdk) for
+> more details about how to initialize `firebase-admin`
+
+### Private topics
+
+To support private topics, we'll provide 2 APIs:
+
+- The `handshaking` API will provide the client credential to start working with Firebase firestore.
+- The `authorize` API will check if the client can subscribe to a topic/channel.
+
+```tsx
+app.get('/handshaking', async (request, response) => {
+  //
+  // Assuming that your user is a subscriber.
+  // Then you can handshake with the user by calling the `handshake` method.
+  //
+  const token: string = await messenger.handshake(request.user)
+
+  response.json({
+    token,
+  })
+})
+
+app.post('/authorize', async (request, response) => {
+  //
+
+  const channel: string = request.body
+
+  // DO your authorization here
+
+  // If your client can access the private channel,
+  await messenger.grant(channel)
+
+  return {
+    granted: channel,
+  }
+})
+```
+
+We'll provide a firestore security rule to actually protect our channel.
+
+Open your Firebase firestore console, replace the default rule with this one
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /channels/{channel}/messages/{message} {
+    	function getChannelSubscribers() {
+        return get(/databases/$(database)/documents/channels/$(channel)).data.subscribers
+      }
+
+      allow read: if channel.matches('channel_.*')
+      allow read: if request.auth.uid in getChannelSubscribers()
+    }
+  }
+}
+```
+
+Finally, replace `Channel` with `PrivateChannel`:
+
+```tsx
+
+channel() {
+  // return new Channel(`post-${this.id}`)
+  return new PrivateChannel(`post-${this.id}`)
+}
+```
+
+That's it! Your Topic now is a private one!
+
+> 💡 How it works
+>
+> When you call the `handshake` method, the firestore transport will return a [**Custom Token**](https://firebase.google.com/docs/auth/admin/create-custom-tokens).
+> From the client will use that custom token to sign in via [signinWithCustomToken()](https://firebase.google.com/docs/auth/web/custom-auth) method.
+>
+> Then the security rule will check against the token to determine whether the client can subscribe or not.
 
 ### Sending a message to a subscriber
 
@@ -223,48 +324,7 @@ messenger.send(
 > A `Subscriber` can subscribe to many `Topic`, but have one inbound channel.
 >
 > Certainly you can use `Channel` instead of `PrivateChannel` as an _inbound channel_.
-> But hey! if you are doing **everyone can subscribe to it!**. Not so private right?
-
-### Using `firestore` transport
-
-Instead of using `log` transport, we can use the `firestore` transport which can
-send messages to the browsers / devices and authorize their subscriptions to private topics.
-
-First let's install `firebase-admin` library
-
-`yarn`
-
-```shell script
-yarn add firebase-admin
-```
-
-`npm`
-
-```shell script
-npm i -S firebase-admin
-```
-
-Now, let's initialize the firebase admin application:
-
-```ts
-import * as admin from 'firebase-admin'
-
-const app = admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
-})
-```
-
-Then replace the `messenger` initialization script
-
-```ts
-// const messenger = new Messenger(transports.log(console))
-const messenger = new Messenger(transports.firestore(app))
-```
-
-> 💡
->
-> Please refer to the [Firebase Documentation](https://firebase.google.com/docs/admin/setup#initialize-sdk) for
-> more details about how to initialize `firebase-admin`
+> But hey! if you are doing so, **everyone can subscribe to it!**. Not so private right?
 
 ## Push Notification
 

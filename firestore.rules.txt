@@ -1,0 +1,13 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /channels/{channel}/messages/{message} {
+    	function getChannelSubscribers() {
+        return get(/databases/$(database)/documents/channels/$(channel)).data.subscribers
+      }
+
+      allow read: if channel.matches('channel_.*')
+      allow read: if request.auth.uid in getChannelSubscribers()
+    }
+  }
+}
